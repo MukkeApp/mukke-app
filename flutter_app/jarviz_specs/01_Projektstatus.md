@@ -10,5 +10,9 @@
 
 
 
+4\. Blocker / Risiken / Aktuelle technische Hindernisse/ offene Entscheidungen / Abhängigkeiten ( Server, Firebase, API etc.)
 
+
+
+5\. Entscheidungen getroffen , Datum, Entscheidung, Warum
 
