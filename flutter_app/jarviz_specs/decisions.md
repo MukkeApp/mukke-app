@@ -65,3 +65,12 @@ Begründung:
 **Rationale:** Schnellster MVP, klare Kontrolle, später upgradebar auf Custom Claims/Firestore Roles.  
 **Consequences:** E-Mail muss korrekt sein; echte Security später serverseitig (Rules/Claims) ergänzen.
 
+## Dinge die bewusst NICHT umgesetzt werden (v1)
+- Vollautomatische Cloud-Memory-Speicherung
+- Drittanbieter-Zwang
+- Komplexe Plugin-Systeme
+
+Begründung:
+Fokus auf Stabilität und Kontrolle.
+
+

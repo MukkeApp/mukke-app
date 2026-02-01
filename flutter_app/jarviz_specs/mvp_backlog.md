@@ -78,3 +78,15 @@ Priorität folgt:
 
 
 
+\## Qualitätsregeln
+
+\- flutter analyze = 0
+
+\- Tests müssen grün sein
+
+\- Keine Feature-Erweiterung vor Stabilität
+
+
+
+Feature als separates Epic (nicht P0)
+

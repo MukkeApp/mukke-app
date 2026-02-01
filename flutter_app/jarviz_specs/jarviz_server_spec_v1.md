@@ -602,5 +602,65 @@ Alle WS Messages sind JSON (Text Frames).
 
 \- Keine komplexen Toolchains/Plugins; nur minimaler Module-Status + Chat
 
+## Offline-Prinzip
+Auch bei Serverausfall muss der Client minimale Chatfähigkeit behalten.
+
+neues Modul avatar_realtime als Capabilities/Module
+
+
+# jarviz_specs/01_Projektstatus.md
+
+Stand: 2026-02-01 (Europe/Berlin)
+
+## 1) Was funktioniert schon?
+- App startet und läuft auf Android Gerät.
+- Flutter Setup ok, Devices erkannt.
+- flutter test: grün.
+
+## 2) Was fehlt noch?
+MVP / P0 laut Backlog & Roadmap:
+- Firebase Login (E-Mail/Passwort) sauber/stabil (UI + AuthService + Error-Mapping + AuthGate).
+- Rollen/Permissions inkl. Boss-only (nur Florian Schulz; v1 via E-Mail Allowlist).
+- Mini-Avatar-Chat E2E + Offline-Fallback + lokales verschlüsseltes Memory (Opt-in + Löschen/Export).
+- Codequalität: flutter analyze = 0 Issues (oder mindestens 0 Errors, Ziel: 0) + Tests grün.
+
+Nicht-MVP / später:
+- Viele Screens haben noch keine Anbindungen/keine Persistenz (z.B. Profil speichert Eingaben nicht, Daten werden nicht über Screens geteilt).
+  => als separates Paket nach MVP stabilisieren einplanen.
+
+## 3) Was ist als Nächstes dran?
+Nächster Sprint gemäß Roadmap:
+Tag 1 — Auth stabil:
+- AuthService + auth_error_mapper.dart (testbar), Login/Signup/Logout Flow final.
+- AuthGate: stabile Zustände (loading/signed-out/signed-in), keine Route-Loops.
+- Basic Tests: AuthGate Widget Smoke + AuthService Unit.
+
+Danach:
+Tag 2 — Rollen/Boss-only:
+- Role enum + RoleResolver.
+- Boss-Allowlist (E-Mail) aus .env, Boss nur Florian (siehe decisions.md).
+- Guards: UI + Route + Actions.
+
+## 4) Blocker / Risiken / technische Hindernisse
+- flutter analyze zeigt viele Infos/Warnungen; kein akuter Blocker fürs Ausführen, aber Ziel (Qualität) erfordert späteres Cleanup.
+- Profil/Screen-State: aktuell keine Persistenz/State-Sharing -> bewusst verschoben, sonst Scope creep.
+
+## 5) Entscheidungen (Referenz)
+- Siehe jarviz_specs/decisions.md:
+    - API Envelope + Legacy response Feld
+    - WS Pfad /ws empfohlen
+    - Auth Error-Mapping testbar auslagern
+    - Boss-only Access v1 via Email Whitelist (Boss identity: Mapstar1588@web.de)
+## 4) Non-Goals v1 (explizit)
+
+Folgende Themen sind in v1 bewusst NICHT Bestandteil (Scope-Schutz):
+
+- Kein dauerhaftes Speichern von User-Memory auf dem Server (Memory bleibt device-only; opt-in im Client).
+- Keine Profil-/Einstellungs-Persistenz als API-Ziel in v1 (Profil speichern/Sync ist App-Thema, späteres Paket).
+- Keine Payments/Billing-Logik serverseitig (nur Stub/Mock falls nötig).
+- Keine Admin-UI/Backoffice-Features über den Server (Boss-only bleibt v1 clientseitig + optional Allowlist im Server).
+- Kein komplexes Rollen-/Permissions-System (nur minimal: role in Response möglich, Allowlist optional).
+- Keine “KI-Qualität”/Model-Auswahl/Prompt-Engineering als Spec-Ziel; v1 ist primär Transport/Contract.
+- Kein Rate-Limit-/Abuse-System als Muss (nur error codes vorgesehen; echte Limits später).
 
 

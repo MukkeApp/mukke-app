@@ -118,3 +118,13 @@ Deliverable:
 
 
 
+\## Nach Tag 7 – Bewertung
+
+\- Was lief gut?
+
+\- Was lief schlecht?
+
+\- Nächste 7-Tage-Planung
+
+
+
