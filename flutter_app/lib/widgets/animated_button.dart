@@ -16,7 +16,7 @@ class AnimatedButton extends StatefulWidget {
   final double elevation;
 
   const AnimatedButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.text,
     this.icon,
@@ -28,7 +28,7 @@ class AnimatedButton extends StatefulWidget {
     this.enableHapticFeedback = true,
     this.animationDuration = const Duration(milliseconds: 200),
     this.elevation = 4,
-  }) : super(key: key);
+  });
 
   @override
   State<AnimatedButton> createState() => _AnimatedButtonState();
@@ -158,13 +158,13 @@ class PulseAnimationButton extends StatefulWidget {
   final Duration duration;
 
   const PulseAnimationButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
     this.pulseColor = AppColors.primary,
     this.size = 60,
     this.duration = const Duration(seconds: 2),
-  }) : super(key: key);
+  });
 
   @override
   State<PulseAnimationButton> createState() => _PulseAnimationButtonState();
@@ -277,12 +277,12 @@ class BounceButton extends StatefulWidget {
   final double scaleFactor;
 
   const BounceButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
     this.duration = const Duration(milliseconds: 150),
     this.scaleFactor = 0.8,
-  }) : super(key: key);
+  });
 
   @override
   State<BounceButton> createState() => _BounceButtonState();
@@ -351,7 +351,7 @@ class NeumorphicButton extends StatefulWidget {
   final double borderRadius;
 
   const NeumorphicButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
     this.width,
@@ -359,7 +359,7 @@ class NeumorphicButton extends StatefulWidget {
     this.padding = const EdgeInsets.all(16),
     this.backgroundColor = AppColors.background,
     this.borderRadius = 20,
-  }) : super(key: key);
+  });
 
   @override
   State<NeumorphicButton> createState() => _NeumorphicButtonState();

@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 // Utils imports
-import '../utils/constants.dart';
-import '../providers/user_provider.dart';
 
 class MukkeFeedbackScreen extends StatefulWidget {
   const MukkeFeedbackScreen({super.key});

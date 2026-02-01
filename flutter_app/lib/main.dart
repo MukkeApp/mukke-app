@@ -167,8 +167,8 @@ class MukkeApp extends StatelessWidget {
                                 .textTheme
                                 .headlineSmall
                                 ?.copyWith(
-                                  color: Colors.white,
-                                ),
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -177,8 +177,8 @@ class MukkeApp extends StatelessWidget {
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(
-                                  color: Colors.white70,
-                                ),
+                              color: Colors.white70,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -196,38 +196,38 @@ class MukkeApp extends StatelessWidget {
   }
 
   Map<String, WidgetBuilder> get _routes => {
-        // ⚠️ KEIN AppRoutes.home ('/') hier!
-        AppRoutes.profile: (context) => const ProfileScreen(),
-        AppRoutes.music: (context) => const MukkeMusicScreen(),
-        AppRoutes.kiMusic: (context) => const KiMusicScreen(),
-        AppRoutes.dating: (context) => const DatingProfileScreen(),
-        AppRoutes.sport: (context) => const MukkeSportScreen(),
-        AppRoutes.challenges: (context) => const MukkeRealChallengeScreen(),
-        AppRoutes.games: (context) => const MukkeGamesScreen(),
-        AppRoutes.avatar: (context) => const MukkeAvatarScreen(),
-        AppRoutes.tracking: (context) => const MukkeTrackingScreen(),
-        AppRoutes.fashion: (context) => const MukkeFashionScreen(),
-        AppRoutes.language: (context) => const MukkeLanguageScreen(),
-        AppRoutes.live: (context) => const MukkeLiveScreen(),
+    // ⚠️ KEIN AppRoutes.home ('/') hier!
+    AppRoutes.profile: (context) => const ProfileScreen(),
+    AppRoutes.music: (context) => const MukkeMusicScreen(),
+    AppRoutes.kiMusic: (context) => const KiMusicScreen(),
+    AppRoutes.dating: (context) => const DatingProfileScreen(),
+    AppRoutes.sport: (context) => const MukkeSportScreen(),
+    AppRoutes.challenges: (context) => const MukkeRealChallengeScreen(),
+    AppRoutes.games: (context) => const MukkeGamesScreen(),
+    AppRoutes.avatar: (context) => const MukkeAvatarScreen(),
+    AppRoutes.tracking: (context) => const MukkeTrackingScreen(),
+    AppRoutes.fashion: (context) => const MukkeFashionScreen(),
+    AppRoutes.language: (context) => const MukkeLanguageScreen(),
+    AppRoutes.live: (context) => const MukkeLiveScreen(),
 
-        // ✅ 3c2: Boss Route korrekt (BossGuard schützt)
-        AppRoutes.boss: (context) => const BossGuard(
-              child: BossPanelScreen(),
-            ),
+    // ✅ 3c2: Boss Route korrekt (BossGuard schützt)
+    AppRoutes.boss: (context) => const BossGuard(
+      child: BossPanelScreen(),
+    ),
 
-        AppRoutes.feedback: (context) => const MukkeFeedbackScreen(),
-        AppRoutes.accountLinking: (context) => AccountLinkingScreen(
-              socialLinks: const {},
-              onUpdate: (links) {},
-            ),
-        AppRoutes.agb: (context) => const AGBScreen(),
+    AppRoutes.feedback: (context) => const MukkeFeedbackScreen(),
+    AppRoutes.accountLinking: (context) => AccountLinkingScreen(
+      socialLinks: const {},
+      onUpdate: (_) {},
+    ),
+    AppRoutes.agb: (context) => const AGBScreen(),
 
-        // >>> Ergänzt/angepasst: explizite Routen zum Öffnen der Seite in gewünschtem Modus
-        '/register': (context) =>
-            const RegisterScreen(initialMode: AuthFormMode.signup),
-        '/login': (context) =>
-            const RegisterScreen(initialMode: AuthFormMode.login),
-      };
+    // >>> Ergänzt/angepasst: explizite Routen zum Öffnen der Seite in gewünschtem Modus
+    '/register': (context) =>
+    const RegisterScreen(initialMode: AuthFormMode.signup),
+    '/login': (context) =>
+    const RegisterScreen(initialMode: AuthFormMode.login),
+  };
 
   Route<dynamic> _generateRoute(RouteSettings settings) {
     return _buildRoute(
@@ -272,9 +272,9 @@ class MukkeApp extends StatelessWidget {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
+        final tween =
+        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        final offsetAnimation = animation.drive(tween);
 
         return SlideTransition(position: offsetAnimation, child: child);
       },

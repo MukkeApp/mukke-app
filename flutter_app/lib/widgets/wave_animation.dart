@@ -11,14 +11,14 @@ class WaveAnimation extends StatefulWidget {
   final int waveCount;
 
   const WaveAnimation({
-    Key? key,
+    super.key,
     this.height = 200,
     this.width = double.infinity,
     this.color,
     this.duration = const Duration(seconds: 3),
     this.amplitude = 20,
     this.waveCount = 2,
-  }) : super(key: key);
+  });
 
   @override
   State<WaveAnimation> createState() => _WaveAnimationState();
@@ -112,13 +112,13 @@ class MultipleWaveAnimation extends StatefulWidget {
   final double amplitude;
 
   const MultipleWaveAnimation({
-    Key? key,
+    super.key,
     this.height = 200,
     this.width = double.infinity,
     this.colors = const [AppColors.primary, AppColors.accent],
     this.duration = const Duration(seconds: 3),
     this.amplitude = 20,
-  }) : super(key: key);
+  });
 
   @override
   State<MultipleWaveAnimation> createState() => _MultipleWaveAnimationState();
@@ -214,12 +214,12 @@ class CircularWaveAnimation extends StatefulWidget {
   final int waveCount;
 
   const CircularWaveAnimation({
-    Key? key,
+    super.key,
     this.size = 200,
     this.color = AppColors.primary,
     this.duration = const Duration(seconds: 2),
     this.waveCount = 3,
-  }) : super(key: key);
+  });
 
   @override
   State<CircularWaveAnimation> createState() => _CircularWaveAnimationState();
@@ -298,13 +298,13 @@ class AudioVisualizerWave extends StatefulWidget {
   final Duration animationDuration;
 
   const AudioVisualizerWave({
-    Key? key,
+    super.key,
     this.width = double.infinity,
     this.height = 100,
     this.colors = const [AppColors.primary, AppColors.accent],
     this.barCount = 30,
     this.animationDuration = const Duration(milliseconds: 300),
-  }) : super(key: key);
+  });
 
   @override
   State<AudioVisualizerWave> createState() => _AudioVisualizerWaveState();
@@ -359,7 +359,7 @@ class _AudioVisualizerWaveState extends State<AudioVisualizerWave>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: widget.width,
       height: widget.height,
       child: Row(
@@ -399,12 +399,12 @@ class LiquidWaveBackground extends StatefulWidget {
   final Duration duration;
 
   const LiquidWaveBackground({
-    Key? key,
+    super.key,
     this.height = double.infinity,
     this.backgroundColor = AppColors.background,
     this.waveColor = AppColors.primary,
     this.duration = const Duration(seconds: 10),
-  }) : super(key: key);
+  });
 
   @override
   State<LiquidWaveBackground> createState() => _LiquidWaveBackgroundState();
@@ -517,11 +517,11 @@ class LoadingWaveAnimation extends StatefulWidget {
   final Duration duration;
 
   const LoadingWaveAnimation({
-    Key? key,
+    super.key,
     this.size = 100,
     this.color = AppColors.primary,
     this.duration = const Duration(seconds: 2),
-  }) : super(key: key);
+  });
 
   @override
   State<LoadingWaveAnimation> createState() => _LoadingWaveAnimationState();

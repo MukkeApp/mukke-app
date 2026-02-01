@@ -18,7 +18,7 @@ class GradientContainer extends StatelessWidget {
   final Border? border;
 
   const GradientContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.colors,
     this.begin = Alignment.topLeft,
@@ -31,7 +31,7 @@ class GradientContainer extends StatelessWidget {
     this.borderRadius,
     this.boxShadow,
     this.border,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class AnimatedGradientContainer extends StatefulWidget {
   final BorderRadiusGeometry? borderRadius;
 
   const AnimatedGradientContainer({
-    Key? key,
+    super.key,
     required this.child,
     required this.gradients,
     this.duration = const Duration(seconds: 3),
@@ -77,7 +77,7 @@ class AnimatedGradientContainer extends StatefulWidget {
     this.width,
     this.height,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   State<AnimatedGradientContainer> createState() =>
@@ -178,7 +178,7 @@ class GlassMorphismContainer extends StatelessWidget {
   final Border? border;
 
   const GlassMorphismContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.blur = 10,
     this.opacity = 0.1,
@@ -189,7 +189,7 @@ class GlassMorphismContainer extends StatelessWidget {
     this.width,
     this.height,
     this.border,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +230,7 @@ class GradientBorderContainer extends StatelessWidget {
   final BorderRadiusGeometry? borderRadius;
 
   const GradientBorderContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.colors,
     this.borderWidth = 2,
@@ -239,7 +239,7 @@ class GradientBorderContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();

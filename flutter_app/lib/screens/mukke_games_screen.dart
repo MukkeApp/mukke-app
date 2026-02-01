@@ -7,7 +7,6 @@ import 'dart:math' as math;
 
 import '../utils/constants.dart';
 import '../providers/user_provider.dart';
-import '../services/payment_service.dart';
 
 class MukkeGamesScreen extends StatefulWidget {
   const MukkeGamesScreen({super.key});
@@ -203,7 +202,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
     // Check if user has subscription for premium games
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userData = userProvider.userData;
-    final hasSubscription = userData?['subscription']?['active'] ?? false;
+    final hasSubscription = userData['subscription']?['active'] ?? false;
 
     // Some games might require subscription
     if (!hasSubscription && game['requiresSubscription'] == true) {

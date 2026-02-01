@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
 import '../utils/constants.dart';
-import '../providers/app_state.dart';
-import '../services/jarviz_service.dart';
 
 class MukkeMusicScreen extends StatefulWidget {
-  const MukkeMusicScreen({Key? key}) : super(key: key);
+  const MukkeMusicScreen({super.key});
 
   @override
   State<MukkeMusicScreen> createState() => _MukkeMusicScreenState();
@@ -37,7 +34,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen>
   String _currentTrackTitle = 'Wähle deinen Vibe';
   String _currentArtist = 'MukkeApp KI';
   Duration _currentPosition = Duration.zero;
-  Duration _totalDuration = const Duration(minutes: 3, seconds: 30);
+  final Duration _totalDuration = const Duration(minutes: 3, seconds: 30);
 
   // Playlist
   final List<Map<String, dynamic>> _playlist = [];

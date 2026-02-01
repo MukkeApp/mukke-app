@@ -3,12 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-import 'dart:math' as math;
 
 import '../utils/constants.dart';
 
 class MukkeLiveScreen extends StatefulWidget {
-  const MukkeLiveScreen({Key? key}) : super(key: key);
+  const MukkeLiveScreen({super.key});
 
   @override
   State<MukkeLiveScreen> createState() => _MukkeLiveScreenState();
@@ -33,9 +32,9 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
   List<Map<String, dynamic>> _completedChallenges = [];
 
   // User Stats
-  bool _isLive = false;
-  int _currentViewers = 0;
-  double _sessionEarnings = 0.0;
+  final bool _isLive = false;
+  final int _currentViewers = 0;
+  final double _sessionEarnings = 0.0;
 
   @override
   void initState() {
@@ -723,9 +722,9 @@ class CompletedChallengesScreen extends StatelessWidget {
   final List<Map<String, dynamic>> challenges;
 
   const CompletedChallengesScreen({
-    Key? key,
+    super.key,
     required this.challenges,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
