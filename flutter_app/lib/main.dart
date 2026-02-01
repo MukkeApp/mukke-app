@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:mukke_app/screens/mukke_home_screen.dart';
 import 'package:mukke_app/screens/profile_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // <-- hinzugefügt
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mukke_app/widgets/boss_guard.dart';
+import 'package:mukke_app/screens/boss_panel_screen.dart';
 
 // Firebase Options
 import 'services/firebase_options.dart';
@@ -40,7 +41,6 @@ import 'screens/account_linking_screen.dart';
 import 'screens/agb_screen.dart';
 
 // Utils
-import 'utils/constants.dart';
 import 'utils/error_handler.dart';
 
 // >>> AuthGate + RegisterScreen (für Login-/Register-Routen)
@@ -50,7 +50,7 @@ import 'screens/register_screen_.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // .env laden (hinzugefügt)
+  // .env laden
   await dotenv.load(fileName: ".env");
 
   // UI Setup
@@ -97,7 +97,7 @@ void main() async {
 }
 
 class MukkeApp extends StatelessWidget {
-  const MukkeApp({Key? key}) : super(key: key);
+  const MukkeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,8 @@ class MukkeApp extends StatelessWidget {
         ChangeNotifierProvider<AppState>(create: (_) => AppState()),
         ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
         ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider<LanguageProvider>(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider<LanguageProvider>(
+            create: (_) => LanguageProvider()),
         Provider<FirebaseService>(create: (_) => FirebaseService()),
         Provider<JarvizService>(create: (_) => JarvizService()),
         Provider<AuthService>(create: (_) => AuthService()),
@@ -162,16 +163,22 @@ class MukkeApp extends StatelessWidget {
                           const SizedBox(height: 16),
                           Text(
                             'Ein Fehler ist aufgetreten',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: Colors.white,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             errorDetails.exception.toString(),
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white70,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white70,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -189,30 +196,38 @@ class MukkeApp extends StatelessWidget {
   }
 
   Map<String, WidgetBuilder> get _routes => {
-    // ⚠️ KEIN AppRoutes.home ('/') hier!
-    AppRoutes.profile: (context) => const ProfileScreen(),
-    AppRoutes.music: (context) => const MukkeMusicScreen(),
-    AppRoutes.kiMusic: (context) => const KiMusicScreen(),
-    AppRoutes.dating: (context) => const DatingProfileScreen(),
-    AppRoutes.sport: (context) => const MukkeSportScreen(),
-    AppRoutes.challenges: (context) => const MukkeRealChallengeScreen(),
-    AppRoutes.games: (context) => const MukkeGamesScreen(),
-    AppRoutes.avatar: (context) => const MukkeAvatarScreen(),
-    AppRoutes.tracking: (context) => const MukkeTrackingScreen(),
-    AppRoutes.fashion: (context) => const MukkeFashionScreen(),
-    AppRoutes.language: (context) => const MukkeLanguageScreen(),
-    AppRoutes.live: (context) => const MukkeLiveScreen(),
-    AppRoutes.feedback: (context) => const MukkeFeedbackScreen(),
-    AppRoutes.accountLinking: (context) => AccountLinkingScreen(
-      socialLinks: const {},
-      onUpdate: (links) {},
-    ),
-    AppRoutes.agb: (context) => const AGBScreen(),
+        // ⚠️ KEIN AppRoutes.home ('/') hier!
+        AppRoutes.profile: (context) => const ProfileScreen(),
+        AppRoutes.music: (context) => const MukkeMusicScreen(),
+        AppRoutes.kiMusic: (context) => const KiMusicScreen(),
+        AppRoutes.dating: (context) => const DatingProfileScreen(),
+        AppRoutes.sport: (context) => const MukkeSportScreen(),
+        AppRoutes.challenges: (context) => const MukkeRealChallengeScreen(),
+        AppRoutes.games: (context) => const MukkeGamesScreen(),
+        AppRoutes.avatar: (context) => const MukkeAvatarScreen(),
+        AppRoutes.tracking: (context) => const MukkeTrackingScreen(),
+        AppRoutes.fashion: (context) => const MukkeFashionScreen(),
+        AppRoutes.language: (context) => const MukkeLanguageScreen(),
+        AppRoutes.live: (context) => const MukkeLiveScreen(),
 
-    // >>> Ergänzt/angepasst: explizite Routen zum Öffnen der Seite in gewünschtem Modus
-    '/register': (context) => const RegisterScreen(initialMode: AuthFormMode.signup),
-    '/login': (context) => const RegisterScreen(initialMode: AuthFormMode.login),
-  };
+        // ✅ 3c2: Boss Route korrekt (BossGuard schützt)
+        AppRoutes.boss: (context) => const BossGuard(
+              child: BossPanelScreen(),
+            ),
+
+        AppRoutes.feedback: (context) => const MukkeFeedbackScreen(),
+        AppRoutes.accountLinking: (context) => AccountLinkingScreen(
+              socialLinks: const {},
+              onUpdate: (links) {},
+            ),
+        AppRoutes.agb: (context) => const AGBScreen(),
+
+        // >>> Ergänzt/angepasst: explizite Routen zum Öffnen der Seite in gewünschtem Modus
+        '/register': (context) =>
+            const RegisterScreen(initialMode: AuthFormMode.signup),
+        '/login': (context) =>
+            const RegisterScreen(initialMode: AuthFormMode.login),
+      };
 
   Route<dynamic> _generateRoute(RouteSettings settings) {
     return _buildRoute(
@@ -223,7 +238,8 @@ class MukkeApp extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, color: AppColors.error, size: 64),
+                const Icon(Icons.error_outline,
+                    color: AppColors.error, size: 64),
                 const SizedBox(height: 16),
                 Text(
                   'Seite nicht gefunden: ${settings.name}',
@@ -256,7 +272,8 @@ class MukkeApp extends StatelessWidget {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(tween);
 
         return SlideTransition(position: offsetAnimation, child: child);
@@ -267,7 +284,8 @@ class MukkeApp extends StatelessWidget {
 }
 
 class AppRoutes {
-  static const String home = '/'; // bleibt definiert, wird aber NICHT in routes benutzt
+  static const String home =
+      '/'; // bleibt definiert, wird aber NICHT in routes benutzt
   static const String profile = '/profile';
   static const String music = '/music';
   static const String kiMusic = '/music/ki';
@@ -283,6 +301,9 @@ class AppRoutes {
   static const String feedback = '/feedback';
   static const String accountLinking = '/account-linking';
   static const String agb = '/agb';
+
+  // ✅ 3c2: Boss Route-Konstante
+  static const String boss = '/boss';
 }
 
 class AppColors {

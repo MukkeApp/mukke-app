@@ -1,81 +1,102 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'auth_error_mapper.dart';
+
+class AuthException implements Exception {
+  final String code;
+  final String message;
+
+  AuthException(this.code, this.message);
+
+  @override
+  String toString() => 'AuthException($code): $message';
+}
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth;
 
-  // Benutzerregistrierung mit E-Mail und Passwort
-  Future<User?> registerWithEmailPassword(String email, String password) async {
-    try {
-      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+  AuthService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
 
-      // Benutzerprofil in Firestore speichern
-      await _db.collection('users').doc(userCredential.user!.uid).set({
-        'email': email,
-        'createdAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+  Stream<User?> authStateChanges() => _auth.authStateChanges();
 
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      throw Exception("Registrierung fehlgeschlagen: ${e.message}");
-    } catch (e) {
-      throw Exception("Unbekannter Fehler bei der Registrierung: $e");
-    }
-  }
-
-  // Benutzeranmeldung mit E-Mail und Passwort
-  Future<User?> loginWithEmailPassword(String email, String password) async {
-    try {
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      throw Exception("Login fehlgeschlagen: ${e.message}");
-    } catch (e) {
-      throw Exception("Unbekannter Fehler beim Login: $e");
-    }
-  }
-
-  // Aktuell angemeldeter Benutzer
   User? get currentUser => _auth.currentUser;
 
-  // Benutzer abmelden
+  bool get isSignedIn => currentUser != null;
+
+  Future<void> signInWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    final cleanEmail = _normalizeEmail(email);
+    _validateEmailPassword(cleanEmail, password);
+
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: cleanEmail,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e.code, mapFirebaseAuthErrorCodeToMessage(e.code));
+    } catch (_) {
+      throw AuthException('unknown', 'Unbekannter Fehler beim Anmelden.');
+    }
+  }
+
+  Future<void> signUpWithEmailPassword({
+    required String email,
+    required String password,
+    String? displayName,
+  }) async {
+    final cleanEmail = _normalizeEmail(email);
+    _validateEmailPassword(cleanEmail, password);
+
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: cleanEmail,
+        password: password,
+      );
+
+      final name = (displayName ?? '').trim();
+      if (name.isNotEmpty) {
+        await credential.user?.updateDisplayName(name);
+      }
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e.code, mapFirebaseAuthErrorCodeToMessage(e.code));
+    } catch (_) {
+      throw AuthException('unknown', 'Unbekannter Fehler beim Registrieren.');
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    final cleanEmail = _normalizeEmail(email);
+    if (cleanEmail.isEmpty) {
+      throw AuthException('invalid-input', 'Bitte gib eine E-Mail-Adresse ein.');
+    }
+
+    try {
+      await _auth.sendPasswordResetEmail(email: cleanEmail);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e.code, mapFirebaseAuthErrorCodeToMessage(e.code));
+    } catch (_) {
+      throw AuthException('unknown', 'Unbekannter Fehler beim Zurücksetzen des Passworts.');
+    }
+  }
+
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-  // Benutzerprofil aus Firestore abrufen
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserProfile(String uid) async {
-    try {
-      return await _db.collection('users').doc(uid).get();
-    } catch (e) {
-      throw Exception("Fehler beim Laden des Benutzerprofils: $e");
-    }
-  }
+  // --- helpers
+  String _normalizeEmail(String email) => email.trim().toLowerCase();
 
-  // Benutzerprofil aktualisieren
-  Future<void> updateUserProfile(String uid, Map<String, dynamic> data) async {
-    try {
-      await _db.collection('users').doc(uid).set(data, SetOptions(merge: true));
-    } catch (e) {
-      throw Exception("Fehler beim Aktualisieren des Benutzerprofils: $e");
+  void _validateEmailPassword(String email, String password) {
+    if (email.isEmpty) {
+      throw AuthException('invalid-input', 'Bitte gib eine E-Mail-Adresse ein.');
     }
-  }
-
-  // Benutzer löschen
-  Future<void> deleteUser() async {
-    try {
-      await _auth.currentUser?.delete();
-    } on FirebaseAuthException catch (e) {
-      throw Exception("Benutzer konnte nicht gelöscht werden: ${e.message}");
-    } catch (e) {
-      throw Exception("Unbekannter Fehler beim Löschen des Benutzers: $e");
+    if (password.isEmpty) {
+      throw AuthException('invalid-input', 'Bitte gib ein Passwort ein.');
+    }
+    if (password.length < 6) {
+      throw AuthException('invalid-input', 'Passwort muss mindestens 6 Zeichen lang sein.');
     }
   }
 }
