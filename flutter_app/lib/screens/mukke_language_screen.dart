@@ -25,26 +25,26 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
   // Firebase
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
-  
+
   // Speech & TTS
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
   final bool _isListening = false;
   final String _spokenText = '';
-  
+
   // Camera for translation
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   bool _isCameraInitialized = false;
   final bool _isTranslating = false;
   final TextRecognizer _textRecognizer = GoogleMlKit.vision.textRecognizer();
-  
+
   // Animation Controllers
   late AnimationController _pulseController;
   late AnimationController _waveController;
   late AnimationController _progressController;
   late AnimationController _glowController;
-  
+
   // Language Learning State
   String _selectedLanguage = '';
   String _selectedLanguageCode = '';
@@ -52,12 +52,12 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
   int _currentXP = 0;
   int _streak = 0;
   Map<String, dynamic> _userProgress = {};
-  
+
   // Current Lesson
   Map<String, dynamic>? _currentLesson;
   final int _currentQuestionIndex = 0;
   final int _correctAnswers = 0;
-  
+
   // Available Languages
   final List<Map<String, dynamic>> _languages = [
     {
@@ -151,7 +151,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
       'users': 750000,
     },
   ];
-  
+
   // Lesson Types
   final List<Map<String, dynamic>> _lessonTypes = [
     {
@@ -205,17 +205,17 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _waveController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat();
-    
+
     _progressController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _glowController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -231,14 +231,14 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       final doc = await _firestore
           .collection('users')
           .doc(user.uid)
           .collection('language_progress')
           .doc('stats')
           .get();
-      
+
       if (doc.exists) {
         setState(() {
           _userProgress = doc.data()!;
@@ -276,7 +276,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
       _selectedLanguage = language['name'];
       _selectedLanguageCode = language['code'];
     });
-    
+
     HapticFeedback.mediumImpact();
     _showLessonTypeSelection();
   }
@@ -308,7 +308,6 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              
               Text(
                 '$_selectedLanguage lernen',
                 style: const TextStyle(
@@ -326,7 +325,6 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
                 ),
               ),
               const SizedBox(height: 32),
-              
               Expanded(
                 child: ListView.builder(
                   itemCount: _lessonTypes.length,
@@ -412,7 +410,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
   void _startLesson(String lessonType) {
     // Generate lesson content based on type
     _generateLesson(lessonType);
-    
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -446,7 +444,12 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
         {
           'type': 'listen',
           'audio': 'Good morning',
-          'options': ['Guten Morgen', 'Gute Nacht', 'Guten Tag', 'Auf Wiedersehen'],
+          'options': [
+            'Guten Morgen',
+            'Gute Nacht',
+            'Guten Tag',
+            'Auf Wiedersehen'
+          ],
           'correct': 0,
         },
       ],
@@ -459,7 +462,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
       _currentXP += xpEarned;
       _currentLevel = (_currentXP / 1000).floor() + 1;
     });
-    
+
     _saveProgress(xpEarned, score, totalQuestions);
     _showCompletionDialog(score, totalQuestions, xpEarned);
   }
@@ -468,7 +471,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       await _firestore
           .collection('users')
           .doc(user.uid)
@@ -545,7 +548,8 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
@@ -643,7 +647,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
                       );
                     },
                   ),
-                  
+
                   // Content
                   SafeArea(
                     child: Padding(
@@ -669,7 +673,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Stats Row
                           Row(
                             children: [
@@ -700,7 +704,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
               ),
             ),
           ),
-          
+
           // Translator Button
           SliverToBoxAdapter(
             child: Padding(
@@ -781,7 +785,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
               ),
             ),
           ),
-          
+
           // Section Title
           const SliverToBoxAdapter(
             child: Padding(
@@ -796,7 +800,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
               ),
             ),
           ),
-          
+
           // Languages Grid
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -816,7 +820,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
               ),
             ),
           ),
-          
+
           // Bottom Padding
           const SliverToBoxAdapter(
             child: SizedBox(height: 32),
@@ -865,7 +869,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
     final progress = _userProgress[language['code']] ?? {};
     final languageXP = progress['xp'] ?? 0;
     final languageLevel = (languageXP / 500).floor() + 1;
-    
+
     return GestureDetector(
       onTap: () => _selectLanguage(language),
       child: AnimatedBuilder(
@@ -950,7 +954,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
                         ),
                       ),
                       const Spacer(),
-                      
+
                       // Progress Bar
                       if (languageXP > 0) ...[
                         ClipRRect(
@@ -994,7 +998,7 @@ class _MukkeLanguageScreenState extends State<MukkeLanguageScreen>
                     ],
                   ),
                 ),
-                
+
                 // NEW Badge
                 if (languageXP == 0)
                   Positioned(
@@ -1035,7 +1039,7 @@ class LessonScreen extends StatefulWidget {
   final String lessonType;
   final Map<String, dynamic> lesson;
   final Function(int, int) onComplete;
-  
+
   const LessonScreen({
     super.key,
     required this.language,
@@ -1053,17 +1057,17 @@ class _LessonScreenState extends State<LessonScreen>
     with TickerProviderStateMixin {
   final FlutterTts _flutterTts = FlutterTts();
   final stt.SpeechToText _speech = stt.SpeechToText();
-  
+
   late AnimationController _progressController;
   late AnimationController _correctController;
   late AnimationController _wrongController;
-  
+
   int _currentQuestionIndex = 0;
   int _correctAnswers = 0;
   bool _isAnswering = false;
   bool _showResult = false;
   bool _isCorrect = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -1079,7 +1083,7 @@ class _LessonScreenState extends State<LessonScreen>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     _initializeTTS();
     _speech.initialize();
   }
@@ -1091,16 +1095,16 @@ class _LessonScreenState extends State<LessonScreen>
 
   void _checkAnswer(String answer) {
     if (_isAnswering) return;
-    
+
     setState(() {
       _isAnswering = true;
       _showResult = true;
     });
-    
+
     final question = widget.lesson['questions'][_currentQuestionIndex];
-    _isCorrect = answer == question['answer'] || 
-                 answer == question['options'][question['correct']];
-    
+    _isCorrect = answer == question['answer'] ||
+        answer == question['options'][question['correct']];
+
     if (_isCorrect) {
       _correctAnswers++;
       _correctController.forward();
@@ -1111,7 +1115,7 @@ class _LessonScreenState extends State<LessonScreen>
       });
       HapticFeedback.heavyImpact();
     }
-    
+
     Future.delayed(const Duration(seconds: 2), () {
       _nextQuestion();
     });
@@ -1149,8 +1153,9 @@ class _LessonScreenState extends State<LessonScreen>
   @override
   Widget build(BuildContext context) {
     final question = widget.lesson['questions'][_currentQuestionIndex];
-    final progress = (_currentQuestionIndex + 1) / widget.lesson['questions'].length;
-    
+    final progress =
+        (_currentQuestionIndex + 1) / widget.lesson['questions'].length;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -1195,7 +1200,7 @@ class _LessonScreenState extends State<LessonScreen>
               ),
             ),
           ),
-          
+
           // Question Content
           Expanded(
             child: Padding(
@@ -1225,7 +1230,7 @@ class _LessonScreenState extends State<LessonScreen>
     return Column(
       children: [
         const SizedBox(height: 40),
-        
+
         // Question
         Container(
           padding: const EdgeInsets.all(24),
@@ -1257,9 +1262,9 @@ class _LessonScreenState extends State<LessonScreen>
             ],
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Options
         Expanded(
           child: GridView.builder(
@@ -1274,7 +1279,7 @@ class _LessonScreenState extends State<LessonScreen>
               final option = question['options'][index];
               final isSelected = _showResult && option == question['answer'];
               final isWrong = _showResult && !isSelected && _isAnswering;
-              
+
               return AnimatedBuilder(
                 animation: isSelected ? _correctController : _wrongController,
                 builder: (context, child) {
@@ -1321,16 +1326,14 @@ class _LessonScreenState extends State<LessonScreen>
             },
           ),
         ),
-        
+
         // Result Feedback
         if (_showResult)
           AnimatedBuilder(
             animation: _isCorrect ? _correctController : _wrongController,
             builder: (context, child) {
               return Transform.scale(
-                scale: _isCorrect
-                    ? _correctController.value
-                    : 1.0,
+                scale: _isCorrect ? _correctController.value : 1.0,
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(top: 20),
@@ -1373,7 +1376,7 @@ class _LessonScreenState extends State<LessonScreen>
     return Column(
       children: [
         const SizedBox(height: 40),
-        
+
         // Instruction
         Container(
           padding: const EdgeInsets.all(24),
@@ -1417,9 +1420,9 @@ class _LessonScreenState extends State<LessonScreen>
             ],
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Play Button
         GestureDetector(
           onTap: () => _speak(question['phrase']),
@@ -1445,9 +1448,9 @@ class _LessonScreenState extends State<LessonScreen>
             ),
           ),
         ),
-        
+
         const Spacer(),
-        
+
         // Record Button
         GestureDetector(
           onTap: () {
@@ -1489,7 +1492,7 @@ class _LessonScreenState extends State<LessonScreen>
     return Column(
       children: [
         const SizedBox(height: 40),
-        
+
         // Instruction
         Container(
           padding: const EdgeInsets.all(24),
@@ -1549,9 +1552,9 @@ class _LessonScreenState extends State<LessonScreen>
             ],
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Options
         Expanded(
           child: ListView.builder(
@@ -1560,7 +1563,7 @@ class _LessonScreenState extends State<LessonScreen>
               final option = question['options'][index];
               final isCorrect = index == question['correct'];
               final isSelected = _showResult && isCorrect;
-              
+
               return GestureDetector(
                 onTap: () => _checkAnswer(option),
                 child: Container(
@@ -1600,7 +1603,7 @@ class _LessonScreenState extends State<LessonScreen>
 // Live Translator Screen
 class LiveTranslatorScreen extends StatefulWidget {
   final CameraController? cameraController;
-  
+
   const LiveTranslatorScreen({
     super.key,
     this.cameraController,
@@ -1617,7 +1620,7 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
   String _recognizedText = '';
   String _translatedText = '';
   String _targetLanguage = 'en';
-  
+
   final List<Map<String, String>> _languages = [
     {'code': 'en', 'name': 'Englisch', 'flag': '🇬🇧'},
     {'code': 'es', 'name': 'Spanisch', 'flag': '🇪🇸'},
@@ -1629,18 +1632,18 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
 
   Future<void> _scanText() async {
     if (_isProcessing || widget.cameraController == null) return;
-    
+
     setState(() => _isProcessing = true);
-    
+
     try {
       final image = await widget.cameraController!.takePicture();
       final inputImage = InputImage.fromFilePath(image.path);
       final recognizedText = await _textRecognizer.processImage(inputImage);
-      
+
       setState(() {
         _recognizedText = recognizedText.text;
       });
-      
+
       if (_recognizedText.isNotEmpty) {
         await _translateText(_recognizedText);
       }
@@ -1676,13 +1679,13 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
           'max_tokens': 100,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
           _translatedText = data['choices'][0]['message']['content'];
         });
-        
+
         // Speak translation
         await _flutterTts.setLanguage(_targetLanguage);
         await _flutterTts.speak(_translatedText);
@@ -1716,7 +1719,7 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
             Positioned.fill(
               child: CameraPreview(widget.cameraController!),
             ),
-          
+
           // Overlay
           Positioned.fill(
             child: Container(
@@ -1734,7 +1737,7 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
               ),
             ),
           ),
-          
+
           // Language Selector
           Positioned(
             top: 100,
@@ -1762,7 +1765,7 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
                         itemBuilder: (context, index) {
                           final lang = _languages[index];
                           final isSelected = lang['code'] == _targetLanguage;
-                          
+
                           return GestureDetector(
                             onTap: () {
                               setState(() {
@@ -1806,7 +1809,7 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
               ),
             ),
           ),
-          
+
           // Scan Button
           Positioned(
             bottom: 100,
@@ -1846,7 +1849,7 @@ class _LiveTranslatorScreenState extends State<LiveTranslatorScreen> {
               ),
             ),
           ),
-          
+
           // Results
           if (_recognizedText.isNotEmpty)
             Positioned(
@@ -1939,14 +1942,13 @@ class Env {
 // Custom Painter
 class LanguageWavePainter extends CustomPainter {
   final double animation;
-  
+
   LanguageWavePainter({required this.animation});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill;
-    
+    final paint = Paint()..style = PaintingStyle.fill;
+
     // Multiple language bubbles floating
     final languages = ['Hello', 'Hola', 'Bonjour', 'Ciao', '你好', 'こんにちは'];
     final colors = [
@@ -1957,17 +1959,18 @@ class LanguageWavePainter extends CustomPainter {
       Colors.orange,
       Colors.purple,
     ];
-    
+
     for (int i = 0; i < languages.length; i++) {
       final progress = (animation + i * 0.15) % 1.0;
       final y = size.height - (progress * size.height * 1.5);
-      final x = size.width * 0.1 + (i * size.width * 0.15) + 
-                 math.sin(progress * math.pi * 2 + i) * 20;
-      
+      final x = size.width * 0.1 +
+          (i * size.width * 0.15) +
+          math.sin(progress * math.pi * 2 + i) * 20;
+
       // Bubble
       paint.color = colors[i].withOpacity(0.2 - progress * 0.2);
       canvas.drawCircle(Offset(x, y), 40, paint);
-      
+
       // Text (simplified representation)
       paint.color = colors[i].withOpacity(0.5 - progress * 0.5);
       paint.style = PaintingStyle.stroke;
@@ -1980,4 +1983,3 @@ class LanguageWavePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-                            

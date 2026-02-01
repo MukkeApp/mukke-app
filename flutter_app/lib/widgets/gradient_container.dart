@@ -80,7 +80,8 @@ class AnimatedGradientContainer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnimatedGradientContainer> createState() => _AnimatedGradientContainerState();
+  State<AnimatedGradientContainer> createState() =>
+      _AnimatedGradientContainerState();
 }
 
 class _AnimatedGradientContainerState extends State<AnimatedGradientContainer>
@@ -96,7 +97,7 @@ class _AnimatedGradientContainerState extends State<AnimatedGradientContainer>
       duration: widget.duration,
       vsync: this,
     );
-    
+
     _animation = Tween<double>(
       begin: 0,
       end: 1,
@@ -204,10 +205,11 @@ class GlassMorphismContainer extends StatelessWidget {
           decoration: BoxDecoration(
             color: color.withOpacity(opacity),
             borderRadius: borderRadius,
-            border: border ?? Border.all(
-              color: color.withOpacity(0.2),
-              width: 1.5,
-            ),
+            border: border ??
+                Border.all(
+                  color: color.withOpacity(0.2),
+                  width: 1.5,
+                ),
           ),
           child: child,
         ),

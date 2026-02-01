@@ -166,10 +166,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: _isLoading ? null : _submit,
                       child: _isLoading
                           ? const SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : Text(_isLogin ? 'Login' : 'Account erstellen'),
                     ),
                   ),
@@ -183,10 +183,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: _isLoading
                         ? null
                         : () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
+                            setState(() {
+                              _isLogin = !_isLogin;
+                            });
+                          },
                     child: Text(
                       _isLogin
                           ? 'Noch keinen Account? Registrieren'

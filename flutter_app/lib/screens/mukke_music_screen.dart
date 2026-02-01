@@ -17,42 +17,43 @@ class MukkeMusicScreen extends StatefulWidget {
   State<MukkeMusicScreen> createState() => _MukkeMusicScreenState();
 }
 
-class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProviderStateMixin {
+class _MukkeMusicScreenState extends State<MukkeMusicScreen>
+    with TickerProviderStateMixin {
   // Animations
   late AnimationController _rotationController;
   late AnimationController _pulseController;
   late AnimationController _waveController;
   late Animation<double> _rotationAnimation;
   late Animation<double> _pulseAnimation;
-  
+
   // State
   bool _isPlaying = false;
   String _currentMode = 'chill';
   double _volume = 0.7;
   bool _isShuffle = false;
   bool _isRepeat = false;
-  
+
   // Current Track Info
   String _currentTrackTitle = 'Wähle deinen Vibe';
   String _currentArtist = 'MukkeApp KI';
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = const Duration(minutes: 3, seconds: 30);
-  
+
   // Playlist
   final List<Map<String, dynamic>> _playlist = [];
   int _currentTrackIndex = 0;
-  
+
   // Timer für Mukke-Time
   Timer? _mukkeTimer;
   int _mukkeMinutes = 0;
-  
+
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
     _loadUserPreferences();
   }
-  
+
   void _initializeAnimations() {
     // Rotation für Cover Art
     _rotationController = AnimationController(
@@ -63,7 +64,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       begin: 0.0,
       end: 2 * math.pi,
     ).animate(_rotationController);
-    
+
     // Pulse für Play Button
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1500),
@@ -77,14 +78,14 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       curve: Curves.easeInOut,
     ));
     _pulseController.repeat(reverse: true);
-    
+
     // Wave Animation
     _waveController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
   }
-  
+
   Future<void> _loadUserPreferences() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -93,7 +94,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             .collection('users')
             .doc(user.uid)
             .get();
-            
+
         if (doc.exists) {
           final data = doc.data();
           setState(() {
@@ -106,7 +107,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       print('Fehler beim Laden der Präferenzen: $e');
     }
   }
-  
+
   Future<void> _saveUserPreferences() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -124,14 +125,14 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       print('Fehler beim Speichern der Präferenzen: $e');
     }
   }
-  
+
   void _startMukkeTimer() {
     _mukkeTimer?.cancel();
     _mukkeTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       setState(() {
         _mukkeMinutes++;
       });
-      
+
       // Achievements checken
       if (_mukkeMinutes == 30) {
         _unlockAchievement('30_min_mukke');
@@ -140,26 +141,24 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       }
     });
   }
-  
+
   void _stopMukkeTimer() {
     _mukkeTimer?.cancel();
     _saveMukkeSession();
   }
-  
+
   Future<void> _saveMukkeSession() async {
     if (_mukkeMinutes > 0) {
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          await FirebaseFirestore.instance
-              .collection('mukke_sessions')
-              .add({
+          await FirebaseFirestore.instance.collection('mukke_sessions').add({
             'userId': user.uid,
             'duration': _mukkeMinutes,
             'mode': _currentMode,
             'timestamp': FieldValue.serverTimestamp(),
           });
-          
+
           // Update total mukke time
           await FirebaseFirestore.instance
               .collection('users')
@@ -173,7 +172,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       }
     }
   }
-  
+
   void _unlockAchievement(String achievementId) {
     // Achievement freischalten
     ScaffoldMessenger.of(context).showSnackBar(
@@ -182,14 +181,15 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
           children: [
             const Icon(Icons.emoji_events, color: Colors.amber),
             const SizedBox(width: 8),
-            Text('Achievement freigeschaltet: ${_getAchievementName(achievementId)}'),
+            Text(
+                'Achievement freigeschaltet: ${_getAchievementName(achievementId)}'),
           ],
         ),
         backgroundColor: AppColors.accent,
       ),
     );
   }
-  
+
   String _getAchievementName(String id) {
     switch (id) {
       case '30_min_mukke':
@@ -200,22 +200,22 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         return 'Neues Achievement!';
     }
   }
-  
+
   Future<void> _generateKiMusic() async {
     try {
       setState(() {
         _currentTrackTitle = 'KI generiert deinen Track...';
         _currentArtist = 'MukkeApp KI';
       });
-      
+
       // Simuliere KI-Musik Generierung
       await Future.delayed(const Duration(seconds: 2));
-      
+
       setState(() {
         _currentTrackTitle = 'Dein ${_getModeName(_currentMode)} Track';
         _currentArtist = 'MukkeApp KI feat. Jarviz';
       });
-      
+
       _play();
     } catch (e) {
       print('Fehler bei KI-Musik Generierung: $e');
@@ -227,7 +227,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       );
     }
   }
-  
+
   String _getModeGenre(String mode) {
     switch (mode) {
       case 'chill':
@@ -244,7 +244,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         return 'mixed';
     }
   }
-  
+
   double _getModeEnergy(String mode) {
     switch (mode) {
       case 'chill':
@@ -261,7 +261,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         return 0.5;
     }
   }
-  
+
   void _play() {
     setState(() {
       _isPlaying = true;
@@ -269,7 +269,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
     _rotationController.repeat();
     _waveController.repeat();
     _startMukkeTimer();
-    
+
     // Simuliere Position Update
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!_isPlaying) {
@@ -286,7 +286,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       });
     });
   }
-  
+
   void _pause() {
     setState(() {
       _isPlaying = false;
@@ -295,7 +295,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
     _waveController.stop();
     _stopMukkeTimer();
   }
-  
+
   void _togglePlayPause() {
     if (_isPlaying) {
       _pause();
@@ -307,7 +307,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       }
     }
   }
-  
+
   void _skipNext() {
     if (_playlist.isNotEmpty) {
       _currentTrackIndex = (_currentTrackIndex + 1) % _playlist.length;
@@ -316,22 +316,23 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       _generateKiMusic();
     }
   }
-  
+
   void _skipPrevious() {
     if (_currentPosition.inSeconds > 3) {
       setState(() {
         _currentPosition = Duration.zero;
       });
     } else if (_playlist.isNotEmpty) {
-      _currentTrackIndex = (_currentTrackIndex - 1 + _playlist.length) % _playlist.length;
+      _currentTrackIndex =
+          (_currentTrackIndex - 1 + _playlist.length) % _playlist.length;
       _loadTrack(_currentTrackIndex);
     }
   }
-  
+
   void _loadTrack(int index) {
     // Implementierung für Playlist-Tracks
   }
-  
+
   void _handleTrackComplete() {
     if (_isRepeat) {
       setState(() {
@@ -345,22 +346,22 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       _skipNext();
     }
   }
-  
+
   void _changeMode(String mode) {
     setState(() {
       _currentMode = mode;
     });
     _saveUserPreferences();
-    
+
     // Visuelles Feedback
     HapticFeedback.lightImpact();
-    
+
     // Neue Musik für neuen Mode generieren
     if (_isPlaying) {
       _generateKiMusic();
     }
   }
-  
+
   @override
   void dispose() {
     _rotationController.dispose();
@@ -370,7 +371,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
     _saveMukkeSession();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -414,26 +415,26 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             children: [
               // Mode Selector
               _buildModeSelector(),
-              
+
               // Cover Art & Visualizer
               Expanded(
                 child: Center(
                   child: _buildCoverArt(),
                 ),
               ),
-              
+
               // Track Info
               _buildTrackInfo(),
-              
+
               // Progress Bar
               _buildProgressBar(),
-              
+
               // Controls
               _buildControls(),
-              
+
               // Volume & Features
               _buildBottomControls(),
-              
+
               const SizedBox(height: 20),
             ],
           ),
@@ -441,7 +442,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ),
     );
   }
-  
+
   List<Color> _getModeColors() {
     switch (_currentMode) {
       case 'chill':
@@ -458,10 +459,10 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         return [AppColors.primary, AppColors.accent];
     }
   }
-  
+
   Widget _buildModeSelector() {
     final modes = ['chill', 'party', 'focus', 'workout', 'relax'];
-    
+
     return Container(
       height: 60,
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -472,7 +473,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         itemBuilder: (context, index) {
           final mode = modes[index];
           final isSelected = _currentMode == mode;
-          
+
           return Padding(
             padding: const EdgeInsets.only(right: 12),
             child: Material(
@@ -481,21 +482,26 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
                 onTap: () => _changeMode(mode),
                 borderRadius: BorderRadius.circular(25),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? Colors.white : Colors.white.withOpacity(0.2),
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(25),
                     border: Border.all(
                       color: Colors.white.withOpacity(0.3),
                       width: 1.5,
                     ),
-                    boxShadow: isSelected ? [
-                      BoxShadow(
-                        color: Colors.white.withOpacity(0.3),
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                      ),
-                    ] : null,
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.3),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -509,8 +515,10 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
                       Text(
                         _getModeName(mode),
                         style: TextStyle(
-                          color: isSelected ? _getModeColors()[0] : Colors.white,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          color:
+                              isSelected ? _getModeColors()[0] : Colors.white,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                           fontSize: 14,
                         ),
                       ),
@@ -524,7 +532,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ),
     );
   }
-  
+
   IconData _getModeIcon(String mode) {
     switch (mode) {
       case 'chill':
@@ -541,7 +549,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         return Icons.music_note;
     }
   }
-  
+
   String _getModeName(String mode) {
     switch (mode) {
       case 'chill':
@@ -558,7 +566,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
         return mode;
     }
   }
-  
+
   Widget _buildCoverArt() {
     return Stack(
       alignment: Alignment.center,
@@ -578,7 +586,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
               },
             ),
           ),
-        
+
         // Rotating Cover
         AnimatedBuilder(
           animation: _rotationAnimation,
@@ -634,7 +642,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             );
           },
         ),
-        
+
         // Pulse Effect
         if (_isPlaying)
           AnimatedBuilder(
@@ -659,7 +667,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ],
     );
   }
-  
+
   Widget _buildTrackInfo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -708,7 +716,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ),
     );
   }
-  
+
   Widget _buildProgressBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
@@ -763,14 +771,14 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ),
     );
   }
-  
+
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$minutes:$seconds';
   }
-  
+
   Widget _buildControls() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -789,14 +797,14 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             HapticFeedback.lightImpact();
           },
         ),
-        
+
         // Previous
         IconButton(
           icon: const Icon(Icons.skip_previous, color: Colors.white),
           iconSize: 36,
           onPressed: _skipPrevious,
         ),
-        
+
         // Play/Pause
         const SizedBox(width: 16),
         Material(
@@ -827,14 +835,14 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
           ),
         ),
         const SizedBox(width: 16),
-        
+
         // Next
         IconButton(
           icon: const Icon(Icons.skip_next, color: Colors.white),
           iconSize: 36,
           onPressed: _skipNext,
         ),
-        
+
         // Repeat
         IconButton(
           icon: Icon(
@@ -852,7 +860,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ],
     );
   }
-  
+
   Widget _buildBottomControls() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -884,9 +892,9 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             color: Colors.white.withOpacity(0.7),
             size: 20,
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // AI Generate Button
           Material(
             color: Colors.transparent,
@@ -896,7 +904,8 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
               },
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
@@ -930,7 +939,7 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
       ),
     );
   }
-  
+
   void _showSettingsSheet() {
     showModalBottomSheet(
       context: context,
@@ -955,8 +964,10 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.equalizer, color: Colors.white),
-              title: const Text('Equalizer', style: TextStyle(color: Colors.white)),
-              trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+              title: const Text('Equalizer',
+                  style: TextStyle(color: Colors.white)),
+              trailing: const Icon(Icons.arrow_forward_ios,
+                  color: Colors.white54, size: 16),
               onTap: () {
                 Navigator.pop(context);
                 // Navigate to equalizer
@@ -964,8 +975,10 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             ),
             ListTile(
               leading: const Icon(Icons.timer, color: Colors.white),
-              title: const Text('Sleep Timer', style: TextStyle(color: Colors.white)),
-              trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+              title: const Text('Sleep Timer',
+                  style: TextStyle(color: Colors.white)),
+              trailing: const Icon(Icons.arrow_forward_ios,
+                  color: Colors.white54, size: 16),
               onTap: () {
                 Navigator.pop(context);
                 // Show sleep timer
@@ -973,7 +986,8 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             ),
             ListTile(
               leading: const Icon(Icons.download, color: Colors.white),
-              title: const Text('Offline Modus', style: TextStyle(color: Colors.white)),
+              title: const Text('Offline Modus',
+                  style: TextStyle(color: Colors.white)),
               trailing: Switch(
                 value: false,
                 onChanged: (value) {
@@ -984,9 +998,12 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
             ),
             ListTile(
               leading: const Icon(Icons.high_quality, color: Colors.white),
-              title: const Text('Audio Qualität', style: TextStyle(color: Colors.white)),
-              subtitle: const Text('Hoch', style: TextStyle(color: Colors.white54)),
-              trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+              title: const Text('Audio Qualität',
+                  style: TextStyle(color: Colors.white)),
+              subtitle:
+                  const Text('Hoch', style: TextStyle(color: Colors.white54)),
+              trailing: const Icon(Icons.arrow_forward_ios,
+                  color: Colors.white54, size: 16),
               onTap: () {
                 Navigator.pop(context);
                 // Show quality options
@@ -1003,47 +1020,47 @@ class _MukkeMusicScreenState extends State<MukkeMusicScreen> with TickerProvider
 class WavePainter extends CustomPainter {
   final double animation;
   final Color color;
-  
+
   WavePainter({
     required this.animation,
     required this.color,
   });
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
-    
+
     final path = Path();
     const waveCount = 3;
     final waveHeight = 20.0;
-    
+
     path.moveTo(0, size.height / 2);
-    
+
     for (int i = 0; i <= size.width.toInt(); i++) {
       final x = i.toDouble();
-      final y = size.height / 2 + 
-                math.sin((x / size.width * waveCount * 2 * math.pi) + 
-                        (animation * 2 * math.pi)) * waveHeight;
-      
+      final y = size.height / 2 +
+          math.sin((x / size.width * waveCount * 2 * math.pi) +
+                  (animation * 2 * math.pi)) *
+              waveHeight;
+
       if (i == 0) {
         path.moveTo(x, y);
       } else {
         path.lineTo(x, y);
       }
     }
-    
+
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
-    
+
     canvas.drawPath(path, paint);
   }
-  
+
   @override
   bool shouldRepaint(WavePainter oldDelegate) {
     return oldDelegate.animation != animation;
   }
 }
-  

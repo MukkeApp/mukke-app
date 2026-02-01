@@ -70,7 +70,7 @@ class UserProvider extends ChangeNotifier {
     if (profileData.containsKey('isPremium')) {
       _isPremium = profileData['isPremium'] as bool? ?? false;
     }
-    
+
     // Update userData map
     _userData = {..._userData, ...profileData};
     notifyListeners();

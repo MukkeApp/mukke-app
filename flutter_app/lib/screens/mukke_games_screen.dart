@@ -21,20 +21,20 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
   // Firebase
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
-  
+
   // Animation Controllers
   late AnimationController _pulseController;
   late AnimationController _rotationController;
   late AnimationController _glowController;
   late AnimationController _coinController;
-  
+
   // User Stats
   int _mukkeCoins = 0;
   int _totalWins = 0;
   int _winStreak = 0;
   double _totalEarnings = 0.0;
   bool _isLoadingStats = true;
-  
+
   // Games List
   final List<Map<String, dynamic>> _games = [
     {
@@ -97,7 +97,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
       'players': 0,
     },
   ];
-  
+
   // Leaderboard
   List<Map<String, dynamic>> _topPlayers = [];
 
@@ -115,17 +115,17 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _rotationController = AnimationController(
       duration: const Duration(seconds: 20),
       vsync: this,
     )..repeat();
-    
+
     _glowController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _coinController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
@@ -136,19 +136,17 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
-      final doc = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      
+
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+
       if (doc.exists) {
         final data = doc.data()!;
         setState(() {
           _mukkeCoins = data['mukkeCoins'] ?? 0;
           _totalWins = data['gameStats']?['totalWins'] ?? 0;
           _winStreak = data['gameStats']?['currentStreak'] ?? 0;
-          _totalEarnings = (data['gameStats']?['totalEarnings'] ?? 0.0).toDouble();
+          _totalEarnings =
+              (data['gameStats']?['totalEarnings'] ?? 0.0).toDouble();
           _isLoadingStats = false;
         });
       }
@@ -165,7 +163,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
           .orderBy('gameStats.totalEarnings', descending: true)
           .limit(10)
           .get();
-      
+
       setState(() {
         _topPlayers = snapshot.docs.map((doc) {
           final data = doc.data();
@@ -201,18 +199,18 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
 
   void _navigateToGame(Map<String, dynamic> game) {
     HapticFeedback.mediumImpact();
-    
+
     // Check if user has subscription for premium games
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userData = userProvider.userData;
     final hasSubscription = userData?['subscription']?['active'] ?? false;
-    
+
     // Some games might require subscription
     if (!hasSubscription && game['requiresSubscription'] == true) {
       _showSubscriptionDialog();
       return;
     }
-    
+
     // Show coming soon dialog for now
     _showComingSoonDialog(game['name']);
   }
@@ -369,7 +367,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                       );
                     },
                   ),
-                  
+
                   // Overlay
                   Container(
                     decoration: BoxDecoration(
@@ -383,7 +381,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                       ),
                     ),
                   ),
-                  
+
                   // Content
                   SafeArea(
                     child: Padding(
@@ -392,7 +390,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 40),
-                          
+
                           // Title
                           const Text(
                             'Mukke Games',
@@ -411,7 +409,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Stats Cards
                           if (!_isLoadingStats)
                             Row(
@@ -452,7 +450,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
               ),
             ),
           ),
-          
+
           // Earnings Banner
           SliverToBoxAdapter(
             child: Container(
@@ -541,7 +539,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
               ),
             ),
           ),
-          
+
           // Games Grid
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -561,7 +559,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
               ),
             ),
           ),
-          
+
           // Leaderboard Section
           SliverToBoxAdapter(
             child: Padding(
@@ -593,13 +591,13 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Top 3 Players
                   ..._topPlayers.take(3).map((player) {
                     final index = _topPlayers.indexOf(player);
                     return _buildLeaderboardItem(player, index + 1);
                   }),
-                  
+
                   const SizedBox(height: 32),
                 ],
               ),
@@ -672,7 +670,8 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: (game['gradient'] as List<Color>)[0].withOpacity(0.3),
+                    color:
+                        (game['gradient'] as List<Color>)[0].withOpacity(0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -732,7 +731,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                         },
                       ),
                     ),
-                  
+
                   // Content
                   Padding(
                     padding: const EdgeInsets.all(20),
@@ -765,7 +764,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                           maxLines: 2,
                         ),
                         const Spacer(),
-                        
+
                         // Bet Info
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -787,7 +786,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
                             ),
                           ),
                         ),
-                        
+
                         // Players Count
                         if (game['players'] > 0) ...[
                           const SizedBox(height: 8),
@@ -827,7 +826,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
     if (rank == 1) medalColor = Colors.amber;
     if (rank == 2) medalColor = Colors.grey[300]!;
     if (rank == 3) medalColor = Colors.orange[700]!;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -877,7 +876,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
             ),
           ),
           const SizedBox(width: 16),
-          
+
           // Player Info
           Expanded(
             child: Column(
@@ -901,7 +900,7 @@ class _MukkeGamesScreenState extends State<MukkeGamesScreen>
               ],
             ),
           ),
-          
+
           // Earnings
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,

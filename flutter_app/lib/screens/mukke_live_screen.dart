@@ -19,19 +19,19 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
   // Firebase
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
-  
+
   // Animation Controllers
   late AnimationController _pulseController;
   late AnimationController _glowController;
   late AnimationController _rotationController;
-  
+
   // Live Stats
   int _totalLiveStreams = 0;
   int _totalViewers = 0;
   double _totalDonations = 0.0;
   List<Map<String, dynamic>> _activeLiveStreams = [];
   List<Map<String, dynamic>> _completedChallenges = [];
-  
+
   // User Stats
   bool _isLive = false;
   int _currentViewers = 0;
@@ -49,12 +49,12 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _glowController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _rotationController = AnimationController(
       duration: const Duration(seconds: 20),
       vsync: this,
@@ -74,7 +74,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
           data['id'] = doc.id;
           return data;
         }).toList();
-        
+
         _totalLiveStreams = _activeLiveStreams.length;
         _totalViewers = _activeLiveStreams.fold(
           0,
@@ -82,7 +82,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
         );
       });
     });
-    
+
     // Load completed challenges
     _loadCompletedChallenges();
   }
@@ -93,14 +93,14 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
         .orderBy('completedAt', descending: true)
         .limit(20)
         .get();
-    
+
     setState(() {
       _completedChallenges = snapshot.docs.map((doc) {
         final data = doc.data();
         data['id'] = doc.id;
         return data;
       }).toList();
-      
+
       _totalDonations = _completedChallenges.fold(
         0.0,
         (sum, challenge) => sum + (challenge['totalDonations'] ?? 0.0),
@@ -291,7 +291,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                 ],
               ),
             ),
-            
+
             // Main Actions
             Padding(
               padding: const EdgeInsets.all(16),
@@ -307,7 +307,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                     isAnimated: true,
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Global Feed Button
                   _buildMainActionCard(
                     title: 'Mukke Live & globale Videos',
@@ -319,7 +319,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Completed Challenges Button
                   _buildMainActionCard(
                     title: 'Mukke erledigte Challenges',
@@ -340,7 +340,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                 ],
               ),
             ),
-            
+
             // Active Streams Section
             if (_activeLiveStreams.isNotEmpty) ...[
               const Padding(
@@ -354,7 +354,6 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                   ),
                 ),
               ),
-              
               SizedBox(
                 height: 220,
                 child: ListView.builder(
@@ -368,7 +367,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 32),
           ],
         ),
@@ -491,7 +490,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
         ),
       ),
     );
-    
+
     if (isAnimated) {
       return AnimatedBuilder(
         animation: _pulseController,
@@ -503,7 +502,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
         },
       );
     }
-    
+
     return card;
   }
 
@@ -545,7 +544,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                 ),
               ),
             ),
-            
+
             // Live Badge
             Positioned(
               top: 8,
@@ -583,7 +582,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
                 ),
               ),
             ),
-            
+
             // Stream Info
             Positioned(
               bottom: 0,
@@ -722,7 +721,7 @@ class _MukkeLiveScreenState extends State<MukkeLiveScreen>
 // Completed Challenges Screen
 class CompletedChallengesScreen extends StatelessWidget {
   final List<Map<String, dynamic>> challenges;
-  
+
   const CompletedChallengesScreen({
     Key? key,
     required this.challenges,
@@ -769,10 +768,11 @@ class CompletedChallengesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChallengeCard(BuildContext context, Map<String, dynamic> challenge) {
+  Widget _buildChallengeCard(
+      BuildContext context, Map<String, dynamic> challenge) {
     final completedAt = challenge['completedAt']?.toDate() ?? DateTime.now();
     final timeAgo = _getTimeAgo(completedAt);
-    
+
     return GestureDetector(
       onTap: () {
         // Play challenge video
@@ -873,7 +873,7 @@ class CompletedChallengesScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Challenge Info
             Padding(
               padding: const EdgeInsets.all(16),
@@ -929,7 +929,7 @@ class CompletedChallengesScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Donations
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -980,7 +980,7 @@ class CompletedChallengesScreen extends StatelessWidget {
   String _getTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays > 7) {
       return '${dateTime.day}.${dateTime.month}.${dateTime.year}';
     } else if (difference.inDays > 0) {

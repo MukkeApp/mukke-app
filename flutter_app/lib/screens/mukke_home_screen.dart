@@ -164,8 +164,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: RadialGradient(
                                 colors: [
-                                  const Color(0xFF00BFFF).withValues(alpha: 0.3 * _glowController.value),
-                                  const Color(0xFFFF1493).withValues(alpha: 0.1 * _glowController.value),
+                                  const Color(0xFF00BFFF).withValues(
+                                      alpha: 0.3 * _glowController.value),
+                                  const Color(0xFFFF1493).withValues(
+                                      alpha: 0.1 * _glowController.value),
                                   Colors.transparent,
                                 ],
                               ),
@@ -253,7 +255,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
@@ -304,7 +307,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: (item['gradient'] as List<Color>)[0].withValues(alpha: 0.3),
+                  color: (item['gradient'] as List<Color>)[0]
+                      .withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -405,7 +409,8 @@ class WaveBackgroundPainter extends CustomPainter {
       path.moveTo(0, yOffset);
 
       for (double x = 0; x <= size.width; x++) {
-        final y = yOffset + math.sin((x / waveLength + animation * 2 * math.pi)) * waveHeight;
+        final y = yOffset +
+            math.sin((x / waveLength + animation * 2 * math.pi)) * waveHeight;
         path.lineTo(x, y);
       }
 
@@ -436,10 +441,13 @@ class SoundWavesPainter extends CustomPainter {
     const barCount = 30;
 
     for (int i = 0; i < barCount; i++) {
-      final x = (size.width / 2) - (barCount * (barWidth + barSpacing) / 2) + i * (barWidth + barSpacing);
+      final x = (size.width / 2) -
+          (barCount * (barWidth + barSpacing) / 2) +
+          i * (barWidth + barSpacing);
       final normalizedPosition = (i - barCount / 2).abs() / (barCount / 2);
       final baseHeight = (1 - normalizedPosition) * 40;
-      final animatedHeight = baseHeight * (0.5 + 0.5 * math.sin(animation * 2 * math.pi + i * 0.1));
+      final animatedHeight = baseHeight *
+          (0.5 + 0.5 * math.sin(animation * 2 * math.pi + i * 0.1));
 
       if (i < barCount / 2) {
         paint.color = Color.lerp(
@@ -475,8 +483,7 @@ class BottomWavePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill;
+    final paint = Paint()..style = PaintingStyle.fill;
 
     // Erste Welle
     paint.color = const Color(0xFFFF1493).withValues(alpha: 0.3);
@@ -484,7 +491,9 @@ class BottomWavePainter extends CustomPainter {
     path1.moveTo(0, size.height);
 
     for (double x = 0; x <= size.width; x++) {
-      final y = 20 + math.sin((x / size.width * 2 * math.pi) + animation * 2 * math.pi) * 10;
+      final y = 20 +
+          math.sin((x / size.width * 2 * math.pi) + animation * 2 * math.pi) *
+              10;
       path1.lineTo(x, y);
     }
 
@@ -498,7 +507,9 @@ class BottomWavePainter extends CustomPainter {
     path2.moveTo(0, size.height);
 
     for (double x = 0; x <= size.width; x++) {
-      final y = 30 + math.sin((x / size.width * 2 * math.pi) - animation * 2 * math.pi) * 15;
+      final y = 30 +
+          math.sin((x / size.width * 2 * math.pi) - animation * 2 * math.pi) *
+              15;
       path2.lineTo(x, y);
     }
 

@@ -27,17 +27,17 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
   List<CameraDescription>? _cameras;
   bool _isCameraInitialized = false;
   bool _isMirrorMode = false;
-  
+
   // Speech & TTS
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
   bool _isListening = false;
   String _speechText = '';
-  
+
   // Firebase
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
-  
+
   // Avatar State
   String _avatarName = 'Jarviz';
   String _avatarMood = 'happy';
@@ -48,13 +48,13 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
     'creativity': 0.7,
     'supportiveness': 1.0,
   };
-  
+
   // Animation Controllers
   late AnimationController _pulseController;
   late AnimationController _floatController;
   late AnimationController _glowController;
   late AnimationController _waveController;
-  
+
   // UI State
   bool _isAnalyzing = false;
   bool _showChat = false;
@@ -79,17 +79,17 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _floatController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _glowController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _waveController = AnimationController(
       duration: const Duration(seconds: 4),
       vsync: this,
@@ -100,7 +100,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       // Lade Avatar-Einstellungen
       final doc = await _firestore
           .collection('users')
@@ -108,17 +108,17 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
           .collection('avatar')
           .doc('settings')
           .get();
-      
+
       if (doc.exists) {
         setState(() {
           _avatarName = doc.data()?['name'] ?? 'Jarviz';
           _avatarPersonality = doc.data()?['personality'] ?? _avatarPersonality;
         });
       }
-      
+
       // Begrüßung
-      _speak('Hallo! Ich bin $_avatarName, dein persönlicher KI-Begleiter. Wie kann ich dir heute helfen?');
-      
+      _speak(
+          'Hallo! Ich bin $_avatarName, dein persönlicher KI-Begleiter. Wie kann ich dir heute helfen?');
     } catch (e) {
       print('Avatar initialization error: $e');
     }
@@ -134,7 +134,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
   Future<void> _checkPermissions() async {
     final cameraStatus = await Permission.camera.request();
     final micStatus = await Permission.microphone.request();
-    
+
     if (cameraStatus.isGranted && micStatus.isGranted) {
       await _initializeCamera();
       await _initializeSpeech();
@@ -152,15 +152,15 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
           (camera) => camera.lensDirection == CameraLensDirection.front,
           orElse: () => _cameras!.first,
         );
-        
+
         _cameraController = CameraController(
           frontCamera,
           ResolutionPreset.high,
           enableAudio: false,
         );
-        
+
         await _cameraController!.initialize();
-        
+
         if (mounted) {
           setState(() {
             _isCameraInitialized = true;
@@ -178,7 +178,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
         onStatus: (status) => print('Speech status: $status'),
         onError: (error) => print('Speech error: $error'),
       );
-      
+
       if (!available) {
         print('Speech recognition not available');
       }
@@ -225,15 +225,15 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
       await _checkPermissions();
       return;
     }
-    
+
     setState(() {
       _isMirrorMode = !_isMirrorMode;
     });
-    
+
     if (_isMirrorMode) {
       _speak('Spiegel-Modus aktiviert. Lass mich dein Outfit analysieren!');
       HapticFeedback.mediumImpact();
-      
+
       // Starte Outfit-Analyse nach 2 Sekunden
       Future.delayed(const Duration(seconds: 2), () {
         _analyzeOutfit();
@@ -245,24 +245,23 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
 
   Future<void> _analyzeOutfit() async {
     if (!_isMirrorMode || _cameraController == null) return;
-    
+
     setState(() => _isAnalyzing = true);
-    
+
     try {
       // Foto aufnehmen
       final image = await _cameraController!.takePicture();
-      
+
       // OpenAI Vision API für Outfit-Analyse
       final analysis = await _analyzeImageWithAI(File(image.path));
-      
+
       setState(() {
         _isAnalyzing = false;
         _lastAdvice = analysis;
       });
-      
+
       // Zeige Analyse
       _showStyleAnalysis(analysis);
-      
     } catch (e) {
       setState(() => _isAnalyzing = false);
       _speak('Entschuldigung, bei der Analyse ist ein Fehler aufgetreten.');
@@ -274,7 +273,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
       // Bild zu Base64 konvertieren
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
-      
+
       // OpenAI API Call
       final response = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
@@ -300,9 +299,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                 },
                 {
                   'type': 'image_url',
-                  'image_url': {
-                    'url': 'data:image/jpeg;base64,$base64Image'
-                  }
+                  'image_url': {'url': 'data:image/jpeg;base64,$base64Image'}
                 }
               ]
             }
@@ -310,14 +307,13 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
           'max_tokens': 300,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data['choices'][0]['message']['content'];
       } else {
         throw Exception('API Error: ${response.statusCode}');
       }
-      
     } catch (e) {
       print('AI Analysis error: $e');
       // Fallback-Antwort
@@ -365,7 +361,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Avatar Icon
               Container(
                 width: 100,
@@ -393,7 +389,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               Text(
                 'Style-Analyse von $_avatarName',
                 style: const TextStyle(
@@ -403,7 +399,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
@@ -427,7 +423,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               Row(
                 children: [
                   Expanded(
@@ -472,7 +468,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
         ),
       ),
     );
-    
+
     _speak(analysis);
   }
 
@@ -480,7 +476,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       await _firestore
           .collection('users')
           .doc(user.uid)
@@ -490,7 +486,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
         'timestamp': FieldValue.serverTimestamp(),
         'avatarMood': _avatarMood,
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Style-Tipp gespeichert!'),
@@ -506,22 +502,23 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
     setState(() {
       _showChat = !_showChat;
     });
-    
+
     if (_showChat && _chatMessages.isEmpty) {
-      _addChatMessage('assistant', 'Hey! Ich bin $_avatarName. Frag mich alles! 😊');
+      _addChatMessage(
+          'assistant', 'Hey! Ich bin $_avatarName. Frag mich alles! 😊');
     }
   }
 
   void _startListening() async {
     if (!_isListening && _speech.isAvailable) {
       setState(() => _isListening = true);
-      
+
       await _speech.listen(
         onResult: (result) {
           setState(() {
             _speechText = result.recognizedWords;
           });
-          
+
           if (result.finalResult) {
             _processSpeechInput(result.recognizedWords);
             setState(() => _isListening = false);
@@ -545,11 +542,11 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
 
   void _sendChatMessage() {
     if (_chatController.text.trim().isEmpty) return;
-    
+
     final message = _chatController.text.trim();
     _addChatMessage('user', message);
     _chatController.clear();
-    
+
     _generateAIResponse(message);
   }
 
@@ -561,7 +558,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
         'timestamp': DateTime.now().toString(),
       });
     });
-    
+
     // Scroll to bottom
     Future.delayed(const Duration(milliseconds: 100), () {
       _chatScrollController.animateTo(
@@ -576,7 +573,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
     try {
       // Zeige Typing-Indikator
       _addChatMessage('assistant', '...');
-      
+
       final response = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
         headers: {
@@ -588,59 +585,57 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
           'messages': [
             {
               'role': 'system',
-              'content': 'Du bist $_avatarName, ein freundlicher KI-Avatar in der MukkeApp. '
-                  'Persönlichkeit: Humor ${_avatarPersonality["humor"]}, '
-                  'Empathie ${_avatarPersonality["empathy"]}, '
-                  'Kreativität ${_avatarPersonality["creativity"]}, '
-                  'Unterstützung ${_avatarPersonality["supportiveness"]}. '
-                  'Sei persönlich, verwende Emojis und halte Antworten kurz aber hilfreich.'
+              'content':
+                  'Du bist $_avatarName, ein freundlicher KI-Avatar in der MukkeApp. '
+                      'Persönlichkeit: Humor ${_avatarPersonality["humor"]}, '
+                      'Empathie ${_avatarPersonality["empathy"]}, '
+                      'Kreativität ${_avatarPersonality["creativity"]}, '
+                      'Unterstützung ${_avatarPersonality["supportiveness"]}. '
+                      'Sei persönlich, verwende Emojis und halte Antworten kurz aber hilfreich.'
             },
-            {
-              'role': 'user',
-              'content': userInput
-            }
+            {'role': 'user', 'content': userInput}
           ],
           'max_tokens': 150,
           'temperature': 0.8,
         }),
       );
-      
+
       // Entferne Typing-Indikator
       setState(() {
         _chatMessages.removeLast();
       });
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final aiResponse = data['choices'][0]['message']['content'];
-        
+
         _addChatMessage('assistant', aiResponse);
         _speak(aiResponse);
-        
+
         // Update Avatar Mood basierend auf Konversation
         _updateAvatarMood(userInput, aiResponse);
-        
       } else {
         throw Exception('API Error: ${response.statusCode}');
       }
-      
     } catch (e) {
       // Entferne Typing-Indikator bei Fehler
       setState(() {
-        if (_chatMessages.isNotEmpty && _chatMessages.last['message'] == '...') {
+        if (_chatMessages.isNotEmpty &&
+            _chatMessages.last['message'] == '...') {
           _chatMessages.removeLast();
         }
       });
-      
+
       print('AI Response error: $e');
-      _addChatMessage('assistant', 'Ups, da ist etwas schief gelaufen. Versuch es nochmal! 😅');
+      _addChatMessage('assistant',
+          'Ups, da ist etwas schief gelaufen. Versuch es nochmal! 😅');
     }
   }
 
   void _updateAvatarMood(String userInput, String aiResponse) {
     // Einfache Stimmungsanalyse
     final lowerInput = userInput.toLowerCase();
-    
+
     if (lowerInput.contains('traurig') || lowerInput.contains('schlecht')) {
       setState(() => _avatarMood = 'empathetic');
     } else if (lowerInput.contains('super') || lowerInput.contains('toll')) {
@@ -713,7 +708,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       await _firestore
           .collection('users')
           .doc(user.uid)
@@ -724,9 +719,9 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
         'personality': _avatarPersonality,
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      
-      _speak('Super! Ich bin jetzt $_avatarName und freue mich auf unsere gemeinsame Zeit!');
-      
+
+      _speak(
+          'Super! Ich bin jetzt $_avatarName und freue mich auf unsere gemeinsame Zeit!');
     } catch (e) {
       print('Save settings error: $e');
     }
@@ -744,13 +739,12 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             itemBuilder: (context, index) {
               final message = _chatMessages[index];
               final isUser = message['sender'] == 'user';
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Row(
-                  mainAxisAlignment: isUser
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
+                  mainAxisAlignment:
+                      isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (!isUser) ...[
@@ -809,7 +803,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             },
           ),
         ),
-        
+
         // Chat Input
         Container(
           padding: const EdgeInsets.all(16),
@@ -817,7 +811,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             color: AppColors.surfaceDark,
             boxShadow: [
               BoxShadow(
-                color:  Color.fromRGBO(0, 0, 0, 0.3),
+                color: Color.fromRGBO(0, 0, 0, 0.3),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -837,10 +831,11 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                   controller: _chatController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: _isListening ? _speechText : 'Nachricht schreiben...',
-                    hintStyle: TextStyle(color:  Color.fromRGBO(0, 0, 0, 0.5)),
+                    hintText:
+                        _isListening ? _speechText : 'Nachricht schreiben...',
+                    hintStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.5)),
                     filled: true,
-                    fillColor:  Color.fromRGBO(0, 0, 0, 0.5),
+                    fillColor: Color.fromRGBO(0, 0, 0, 0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
@@ -887,7 +882,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
               child: CameraPreview(_cameraController!),
             ),
           ),
-        
+
         // Overlay UI
         Positioned.fill(
           child: Container(
@@ -905,7 +900,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             ),
           ),
         ),
-        
+
         // Top Controls
         SafeArea(
           child: Padding(
@@ -957,7 +952,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             ),
           ),
         ),
-        
+
         // Analysis Overlay
         if (_isAnalyzing)
           Positioned.fill(
@@ -968,7 +963,8 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -992,7 +988,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
               ),
             ),
           ),
-        
+
         // Bottom Action Button
         if (!_isAnalyzing)
           Positioned(
@@ -1095,10 +1091,10 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
               );
             },
           ),
-          
+
           // Hauptinhalt
           if (!_showChat) _buildMainView() else _buildChatView(),
-          
+
           // Spiegel-Overlay
           if (_isMirrorMode) _buildMirrorOverlay(),
         ],
@@ -1126,12 +1122,14 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.5 * _glowController.value),
+                          color: AppColors.primary
+                              .withOpacity(0.5 * _glowController.value),
                           blurRadius: 50,
                           spreadRadius: 20,
                         ),
                         BoxShadow(
-                          color: AppColors.accent.withOpacity(0.3 * _glowController.value),
+                          color: AppColors.accent
+                              .withOpacity(0.3 * _glowController.value),
                           blurRadius: 30,
                           spreadRadius: 10,
                         ),
@@ -1140,13 +1138,14 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                   );
                 },
               ),
-              
+
               // Avatar Container
               AnimatedBuilder(
                 animation: _floatController,
                 builder: (context, child) {
                   return Transform.translate(
-                    offset: Offset(0, math.sin(_floatController.value * math.pi) * 10),
+                    offset: Offset(
+                        0, math.sin(_floatController.value * math.pi) * 10),
                     child: AnimatedBuilder(
                       animation: _pulseController,
                       builder: (context, child) {
@@ -1179,7 +1178,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
                                   size: 80,
                                   color: Colors.white,
                                 ),
-                                
+
                                 // Speaking Indicator
                                 if (_isListening)
                                   Positioned(
@@ -1223,9 +1222,9 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Avatar Name & Status
           Text(
             _avatarName,
@@ -1243,9 +1242,9 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
               color: Colors.white.withOpacity(0.7),
             ),
           ),
-          
+
           const SizedBox(height: 40),
-          
+
           // Feature Cards
           _buildFeatureCard(
             icon: Icons.camera_alt,
@@ -1254,9 +1253,9 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             onTap: _toggleMirrorMode,
             gradient: [AppColors.primary, AppColors.accent],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           _buildFeatureCard(
             icon: Icons.mic,
             title: 'Sprachsteuerung',
@@ -1264,9 +1263,9 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             onTap: _startListening,
             gradient: [AppColors.accent, Colors.purple],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           _buildFeatureCard(
             icon: Icons.style,
             title: 'Style-Historie',
@@ -1274,9 +1273,9 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
             onTap: _showStyleHistory,
             gradient: [Colors.purple, AppColors.primary],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           _buildFeatureCard(
             icon: Icons.settings,
             title: 'Avatar anpassen',
@@ -1368,7 +1367,7 @@ class _MukkeAvatarScreenState extends State<MukkeAvatarScreen>
 // Style History Screen
 class StyleHistoryScreen extends StatelessWidget {
   final String avatarName;
-  
+
   const StyleHistoryScreen({
     super.key,
     required this.avatarName,
@@ -1377,7 +1376,7 @@ class StyleHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -1400,9 +1399,9 @@ class StyleHistoryScreen extends StatelessWidget {
               ),
             );
           }
-          
+
           final docs = snapshot.data!.docs;
-          
+
           if (docs.isEmpty) {
             return Center(
               child: Column(
@@ -1425,14 +1424,14 @@ class StyleHistoryScreen extends StatelessWidget {
               ),
             );
           }
-          
+
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
               final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
-              
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(20),
@@ -1495,7 +1494,7 @@ class AvatarSettingsSheet extends StatefulWidget {
   final String avatarName;
   final Map<String, dynamic> personality;
   final Function(String, Map<String, dynamic>) onSave;
-  
+
   const AvatarSettingsSheet({
     super.key,
     required this.avatarName,
@@ -1510,7 +1509,7 @@ class AvatarSettingsSheet extends StatefulWidget {
 class _AvatarSettingsSheetState extends State<AvatarSettingsSheet> {
   late TextEditingController _nameController;
   late Map<String, double> _personality;
-  
+
   @override
   void initState() {
     super.initState();
@@ -1542,7 +1541,7 @@ class _AvatarSettingsSheetState extends State<AvatarSettingsSheet> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             const Text(
               'Avatar anpassen',
               style: TextStyle(
@@ -1552,7 +1551,7 @@ class _AvatarSettingsSheetState extends State<AvatarSettingsSheet> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Name
             TextField(
               controller: _nameController,
@@ -1576,7 +1575,7 @@ class _AvatarSettingsSheetState extends State<AvatarSettingsSheet> {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             const Text(
               'Persönlichkeit',
               style: TextStyle(
@@ -1586,7 +1585,7 @@ class _AvatarSettingsSheetState extends State<AvatarSettingsSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Persönlichkeits-Slider
             ..._personality.entries.map((entry) {
               return Column(
@@ -1633,9 +1632,9 @@ class _AvatarSettingsSheetState extends State<AvatarSettingsSheet> {
                 ],
               );
             }),
-            
+
             const SizedBox(height: 32),
-            
+
             // Save Button
             SizedBox(
               width: double.infinity,
@@ -1687,7 +1686,7 @@ class AvatarBackgroundPainter extends CustomPainter {
   final double animation;
   final Color primaryColor;
   final Color accentColor;
-  
+
   AvatarBackgroundPainter({
     required this.animation,
     required this.primaryColor,
@@ -1697,16 +1696,18 @@ class AvatarBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..style = PaintingStyle.fill;
-    
+
     // Animated Gradient Circles
     for (int i = 0; i < 3; i++) {
       final progress = (animation + i * 0.33) % 1.0;
       final radius = 100 + (i * 50.0);
       final opacity = (1 - progress) * 0.1;
-      
+
       paint.shader = RadialGradient(
         colors: [
-          i % 2 == 0 ? primaryColor.withOpacity(opacity) : accentColor.withOpacity(opacity),
+          i % 2 == 0
+              ? primaryColor.withOpacity(opacity)
+              : accentColor.withOpacity(opacity),
           Colors.transparent,
         ],
       ).createShader(Rect.fromCircle(
@@ -1716,7 +1717,7 @@ class AvatarBackgroundPainter extends CustomPainter {
         ),
         radius: radius,
       ));
-      
+
       canvas.drawCircle(
         Offset(
           size.width * (0.2 + i * 0.3),

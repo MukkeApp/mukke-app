@@ -10,23 +10,23 @@ class MukkeTrackingScreen extends StatefulWidget {
   State<MukkeTrackingScreen> createState() => _MukkeTrackingScreenState();
 }
 
-class _MukkeTrackingScreenState extends State<MukkeTrackingScreen> 
+class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
     with TickerProviderStateMixin {
   // Animation Controllers
   late AnimationController _pulseController;
   late AnimationController _mapAnimationController;
   late Animation<double> _pulseAnimation;
-  
+
   // State Variables
   bool _isAddingChild = false;
   final bool _showMap = false;
   String? _selectedChildId;
-  
+
   // Form Controllers
   final TextEditingController _childNameController = TextEditingController();
   final TextEditingController _childPhoneController = TextEditingController();
   final TextEditingController _childAgeController = TextEditingController();
-  
+
   // Mock Data für verknüpfte Kinder
   final List<Map<String, dynamic>> _children = [
     {
@@ -90,13 +90,13 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
     _initializeAnimations();
     _startLocationUpdates();
   }
-  
+
   void _initializeAnimations() {
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.95,
       end: 1.05,
@@ -104,13 +104,13 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
-    
+
     _mapAnimationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
   }
-  
+
   void _startLocationUpdates() {
     // Simuliere Location Updates
     Timer.periodic(const Duration(seconds: 30), (timer) {
@@ -126,7 +126,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       }
     });
   }
-  
+
   @override
   void dispose() {
     _pulseController.dispose();
@@ -169,32 +169,32 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
         ],
       ),
       body: _isAddingChild ? _buildAddChildView() : _buildMainView(),
-      floatingActionButton: !_isAddingChild ? FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isAddingChild = true;
-          });
-        },
-        backgroundColor: const Color(0xFF00BFFF),
-        child: const Icon(Icons.add),
-      ) : null,
+      floatingActionButton: !_isAddingChild
+          ? FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  _isAddingChild = true;
+                });
+              },
+              backgroundColor: const Color(0xFF00BFFF),
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
-  
+
   Widget _buildMainView() {
     return Column(
       children: [
         _buildInfoBanner(),
         _buildQuickStats(),
         Expanded(
-          child: _children.isEmpty 
-            ? _buildEmptyState()
-            : _buildChildrenList(),
+          child: _children.isEmpty ? _buildEmptyState() : _buildChildrenList(),
         ),
       ],
     );
   }
-  
+
   Widget _buildInfoBanner() {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -248,7 +248,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildQuickStats() {
     return Container(
       height: 100,
@@ -285,7 +285,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildStatCard(
     String label,
     String value,
@@ -325,7 +325,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -370,7 +370,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildChildrenList() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -380,21 +380,21 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       },
     );
   }
-  
+
   Widget _buildChildCard(Map<String, dynamic> child) {
     final bool isOnline = child['isOnline'];
     final int battery = child['battery'];
     final bool lowBattery = battery < 20;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: const Color(0xFF2D2D2D),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isOnline 
-            ? const Color(0xFF00BFFF).withOpacity(0.3)
-            : Colors.red.withOpacity(0.3),
+          color: isOnline
+              ? const Color(0xFF00BFFF).withOpacity(0.3)
+              : Colors.red.withOpacity(0.3),
         ),
       ),
       child: InkWell(
@@ -451,9 +451,9 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: isOnline 
-                                  ? Colors.green.withOpacity(0.2)
-                                  : Colors.red.withOpacity(0.2),
+                                color: isOnline
+                                    ? Colors.green.withOpacity(0.2)
+                                    : Colors.red.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -468,7 +468,8 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
                                   Text(
                                     isOnline ? 'Online' : 'Offline',
                                     style: TextStyle(
-                                      color: isOnline ? Colors.green : Colors.red,
+                                      color:
+                                          isOnline ? Colors.green : Colors.red,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -494,9 +495,9 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
                       Row(
                         children: [
                           Icon(
-                            lowBattery 
-                              ? Icons.battery_alert
-                              : Icons.battery_full,
+                            lowBattery
+                                ? Icons.battery_alert
+                                : Icons.battery_full,
                             color: lowBattery ? Colors.red : Colors.green,
                             size: 20,
                           ),
@@ -604,7 +605,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildActionButton(
     IconData icon,
     String label,
@@ -632,7 +633,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildAddChildView() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -738,10 +739,12 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
                         ],
                       ),
                       const SizedBox(height: 12),
-                      _buildStep('1', 'MukkeApp auf dem Kinderhandy installieren'),
+                      _buildStep(
+                          '1', 'MukkeApp auf dem Kinderhandy installieren'),
                       _buildStep('2', 'Mit der Handynummer anmelden'),
                       _buildStep('3', 'Verknüpfungscode hier eingeben'),
-                      _buildStep('4', 'Berechtigungen auf dem Kinderhandy erlauben'),
+                      _buildStep(
+                          '4', 'Berechtigungen auf dem Kinderhandy erlauben'),
                     ],
                   ),
                 ),
@@ -786,7 +789,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildStep(String number, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -825,7 +828,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
@@ -847,7 +850,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _showChildDetails(Map<String, dynamic> child) {
     showModalBottomSheet(
       context: context,
@@ -905,7 +908,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildChildDetailHeader(Map<String, dynamic> child) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -966,7 +969,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildOverviewTab(Map<String, dynamic> child) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -1024,7 +1027,8 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
                     Text(
                       '${child['battery']}%',
                       style: TextStyle(
-                        color: child['battery'] > 20 ? Colors.green : Colors.red,
+                        color:
+                            child['battery'] > 20 ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -1092,13 +1096,13 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildScreenTimeTab(Map<String, dynamic> child) {
     final restrictions = child['restrictions'] as Map<String, dynamic>;
     final maxScreenTime = restrictions['maxScreenTime'] as int;
     final currentScreenTime = child['screenTimeMinutes'] as int;
     final percentage = (currentScreenTime / maxScreenTime * 100).clamp(0, 100);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -1226,7 +1230,8 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: (restrictions['blockedApps'] as List).map<Widget>((app) {
+              children:
+                  (restrictions['blockedApps'] as List).map<Widget>((app) {
                 return Chip(
                   label: Text(
                     app,
@@ -1244,7 +1249,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildAppUsageItem(Map<String, dynamic> app) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1289,7 +1294,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildSettingsTab(Map<String, dynamic> child) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -1361,7 +1366,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildZoneItem(String name, String address, bool isActive) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1411,7 +1416,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildSettingItem(
     String title,
     String subtitle,
@@ -1464,7 +1469,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   Widget _buildDetailCard(String title, IconData icon, Widget content) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1498,7 +1503,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   // Helper Methods
   int _calculateAverageScreenTime() {
     if (_children.isEmpty) return 0;
@@ -1508,7 +1513,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
     }
     return (total / _children.length).round();
   }
-  
+
   int _calculateAverageBattery() {
     if (_children.isEmpty) return 0;
     int total = 0;
@@ -1517,7 +1522,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
     }
     return (total / _children.length).round();
   }
-  
+
   // Action Methods
   void _showNotificationSettings() {
     // Implementierung für Benachrichtigungseinstellungen
@@ -1528,7 +1533,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _showSettings() {
     // Implementierung für allgemeine Einstellungen
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1538,7 +1543,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _showMapView(Map<String, dynamic> child) {
     // Implementierung für Kartenansicht
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1548,7 +1553,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _callChild(Map<String, dynamic> child) {
     // Implementierung für Anruf
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1558,7 +1563,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _messageChild(Map<String, dynamic> child) {
     // Implementierung für Nachricht
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1568,7 +1573,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _lockDevice(Map<String, dynamic> child) {
     // Implementierung für Gerätesperre
     showDialog(
@@ -1607,7 +1612,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _showEmergencyOptions(Map<String, dynamic> child) {
     // Implementierung für Notfalloptionen
     showModalBottomSheet(
@@ -1687,7 +1692,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _addChild() {
     if (_childNameController.text.isEmpty ||
         _childAgeController.text.isEmpty ||
@@ -1700,7 +1705,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       );
       return;
     }
-    
+
     setState(() {
       _children.add({
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -1724,13 +1729,13 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
         },
         'todayApps': [],
       });
-      
+
       _childNameController.clear();
       _childAgeController.clear();
       _childPhoneController.clear();
       _isAddingChild = false;
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${_childNameController.text} wurde hinzugefügt'),
@@ -1738,7 +1743,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _editChild(Map<String, dynamic> child) {
     // Implementierung für Bearbeiten
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1748,7 +1753,7 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _removeChild(Map<String, dynamic> child) {
     showDialog(
       context: context,
@@ -1790,13 +1795,13 @@ class _MukkeTrackingScreenState extends State<MukkeTrackingScreen>
       ),
     );
   }
-  
+
   void _removeBlockedApp(Map<String, dynamic> child, String app) {
     setState(() {
       (child['restrictions']['blockedApps'] as List).remove(app);
     });
   }
-  
+
   void _addSafeZone() {
     // Implementierung für sichere Zone hinzufügen
     ScaffoldMessenger.of(context).showSnackBar(

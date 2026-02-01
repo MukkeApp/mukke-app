@@ -69,7 +69,8 @@ class AuthService {
   Future<void> sendPasswordResetEmail(String email) async {
     final cleanEmail = _normalizeEmail(email);
     if (cleanEmail.isEmpty) {
-      throw AuthException('invalid-input', 'Bitte gib eine E-Mail-Adresse ein.');
+      throw AuthException(
+          'invalid-input', 'Bitte gib eine E-Mail-Adresse ein.');
     }
 
     try {
@@ -77,7 +78,8 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw AuthException(e.code, mapFirebaseAuthErrorCodeToMessage(e.code));
     } catch (_) {
-      throw AuthException('unknown', 'Unbekannter Fehler beim Zurücksetzen des Passworts.');
+      throw AuthException(
+          'unknown', 'Unbekannter Fehler beim Zurücksetzen des Passworts.');
     }
   }
 
@@ -90,13 +92,15 @@ class AuthService {
 
   void _validateEmailPassword(String email, String password) {
     if (email.isEmpty) {
-      throw AuthException('invalid-input', 'Bitte gib eine E-Mail-Adresse ein.');
+      throw AuthException(
+          'invalid-input', 'Bitte gib eine E-Mail-Adresse ein.');
     }
     if (password.isEmpty) {
       throw AuthException('invalid-input', 'Bitte gib ein Passwort ein.');
     }
     if (password.length < 6) {
-      throw AuthException('invalid-input', 'Passwort muss mindestens 6 Zeichen lang sein.');
+      throw AuthException(
+          'invalid-input', 'Passwort muss mindestens 6 Zeichen lang sein.');
     }
   }
 }

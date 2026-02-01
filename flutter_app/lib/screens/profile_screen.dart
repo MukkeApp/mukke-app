@@ -16,7 +16,6 @@ import 'account_linking_screen.dart';
 import 'agb_screen.dart';
 import 'dating_profile_screen.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -40,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   final _ageController = TextEditingController();
-  
+
   // State Variables
   bool _isLoading = false;
   bool _isSaving = false;
@@ -49,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _agbAccepted = false;
   bool _dsgvoAccepted = false;
   String? _selectedGender;
-  
+
   // Social Media Links
   Map<String, String> _socialLinks = {
     'instagram': '',
@@ -81,36 +80,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Profildaten laden
   Future<void> _loadUserProfile() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final user = _auth.currentUser;
       if (user == null) return;
 
       final doc = await _firestore.collection('users').doc(user.uid).get();
-      
+
       if (doc.exists) {
         final data = doc.data()!;
-        
+
         // Grunddaten
         _nameController.text = data['name'] ?? '';
         _emailController.text = data['email'] ?? user.email ?? '';
         _phoneController.text = data['phone'] ?? '';
         _paypalController.text = data['paypal'] ?? '';
         _descriptionController.text = data['description'] ?? '';
-        
+
         // Physische Daten
         _heightController.text = data['height']?.toString() ?? '';
         _weightController.text = data['weight']?.toString() ?? '';
         _ageController.text = data['age']?.toString() ?? '';
         _selectedGender = data['gender'];
-        
+
         // Profilbild
         _profileImageUrl = data['profileImageUrl'];
-        
+
         // Zustimmungen
         _agbAccepted = data['agbAccepted'] ?? false;
         _dsgvoAccepted = data['dsgvoAccepted'] ?? false;
-        
+
         // Social Media
         if (data['socialLinks'] != null) {
           _socialLinks = Map<String, String>.from(data['socialLinks']);
@@ -132,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         maxHeight: 1080,
         imageQuality: 85,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _profileImage = File(pickedFile.path);
@@ -146,42 +145,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Profilbild hochladen
   Future<String?> _uploadProfileImage() async {
     if (_profileImage == null) return _profileImageUrl;
-    
+
     try {
       final user = _auth.currentUser;
       if (user == null) return null;
-      
+
       final ref = _storage.ref().child('profile_images/${user.uid}.jpg');
       final uploadTask = await ref.putFile(_profileImage!);
-      
+
       if (uploadTask.state == TaskState.success) {
         return await ref.getDownloadURL();
       }
     } catch (e) {
       _showErrorSnackbar('Fehler beim Hochladen des Bildes: $e');
     }
-    
+
     return null;
   }
 
   // Profil speichern
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (!_agbAccepted || !_dsgvoAccepted) {
-      _showErrorSnackbar('Bitte akzeptieren Sie die AGB und Datenschutzerklärung');
+      _showErrorSnackbar(
+          'Bitte akzeptieren Sie die AGB und Datenschutzerklärung');
       return;
     }
-    
+
     setState(() => _isSaving = true);
-    
+
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       // Profilbild hochladen
       String? imageUrl = await _uploadProfileImage();
-      
+
       // Daten vorbereiten
       final profileData = {
         'name': _nameController.text.trim(),
@@ -200,18 +200,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'updatedAt': FieldValue.serverTimestamp(),
         'profileCompleted': _isProfileComplete(),
       };
-      
+
       // In Firestore speichern
       await _firestore.collection('users').doc(user.uid).set(
-        profileData,
-        SetOptions(merge: true),
-      );
-      
+            profileData,
+            SetOptions(merge: true),
+          );
+
       // Provider aktualisieren
       context.read<UserProvider>().updateUserData(profileData);
-      
+
       _showSuccessSnackbar('Profil erfolgreich gespeichert!');
-      
     } catch (e) {
       _showErrorSnackbar('Fehler beim Speichern: $e');
     } finally {
@@ -222,17 +221,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Prüfen ob Profil vollständig
   bool _isProfileComplete() {
     return _nameController.text.isNotEmpty &&
-           _emailController.text.isNotEmpty &&
-           _ageController.text.isNotEmpty &&
-           _selectedGender != null &&
-           _agbAccepted &&
-           _dsgvoAccepted;
+        _emailController.text.isNotEmpty &&
+        _ageController.text.isNotEmpty &&
+        _selectedGender != null &&
+        _agbAccepted &&
+        _dsgvoAccepted;
   }
 
   // Konto löschen Dialog
   void _showDeleteAccountDialog() {
     final passwordController = TextEditingController();
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -278,39 +277,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       // Passwort verifizieren
       final credential = EmailAuthProvider.credential(
         email: user.email!,
         password: password,
       );
-      
+
       await user.reauthenticateWithCredential(credential);
-      
+
       // Daten aus Firestore löschen
       await _firestore.collection('users').doc(user.uid).delete();
-      
+
       // Profilbild löschen
       try {
         await _storage.ref().child('profile_images/${user.uid}.jpg').delete();
       } catch (e) {
         // Fehler ignorieren falls kein Bild existiert
       }
-      
+
       // Account löschen
       await user.delete();
-      
+
       // Zur Login-Seite navigieren
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/login',
         (route) => false,
       );
-      
+
       _showSuccessSnackbar('Konto erfolgreich gelöscht');
-      
     } catch (e) {
       Navigator.pop(context);
-      
+
       if (e.toString().contains('wrong-password')) {
         _showErrorSnackbar('Falsches Passwort');
         _showPasswordResetOption();
@@ -444,12 +442,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       )
                                     : _profileImageUrl != null
                                         ? DecorationImage(
-                                            image: NetworkImage(_profileImageUrl!),
+                                            image:
+                                                NetworkImage(_profileImageUrl!),
                                             fit: BoxFit.cover,
                                           )
                                         : null,
                               ),
-                              child: (_profileImage == null && _profileImageUrl == null)
+                              child: (_profileImage == null &&
+                                      _profileImageUrl == null)
                                   ? const Icon(
                                       Icons.person,
                                       size: 60,
@@ -496,7 +496,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Persönliche Daten Section
                     _buildSectionTitle('Persönliche Daten'),
                     const SizedBox(height: 16),
-                    
+
                     // Name
                     TextFormField(
                       controller: _nameController,
@@ -512,7 +512,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Email (nicht editierbar wenn von Auth)
                     TextFormField(
                       controller: _emailController,
@@ -524,7 +524,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Telefonnummer
                     TextFormField(
                       controller: _phoneController,
@@ -535,7 +535,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       keyboardType: TextInputType.phone,
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Geschlecht, Alter, Größe, Gewicht in einer Reihe
                     Row(
                       children: [
@@ -585,7 +585,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Größe und Gewicht
                     Row(
                       children: [
@@ -623,7 +623,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Beschreibung
                     TextFormField(
                       controller: _descriptionController,
@@ -640,7 +640,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Zahlungsinformationen
                     _buildSectionTitle('Zahlungsinformationen'),
                     const SizedBox(height: 16),
-                    
+
                     TextFormField(
                       controller: _paypalController,
                       decoration: const InputDecoration(
@@ -655,7 +655,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Action Buttons
                     _buildSectionTitle('Profil-Aktionen'),
                     const SizedBox(height: 16),
-                    
+
                     // Accounts verknüpfen
                     _buildActionButton(
                       icon: Icons.link,
@@ -678,7 +678,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Dating Profil
                     _buildActionButton(
                       icon: Icons.favorite,
@@ -698,7 +698,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Rechtliches
                     _buildSectionTitle('Rechtliches & Zustimmung'),
                     const SizedBox(height: 16),
-                    
+
                     // AGB Checkbox
                     Card(
                       color: AppColors.surfaceDark,
@@ -733,12 +733,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // DSGVO Checkbox
                     Card(
                       color: AppColors.surfaceDark,
                       child: CheckboxListTile(
-                        title: const Text('Ich stimme der Datenschutzerklärung zu'),
+                        title: const Text(
+                            'Ich stimme der Datenschutzerklärung zu'),
                         subtitle: const Text(
                           'Deine Daten werden sicher und DSGVO-konform gespeichert',
                           style: TextStyle(fontSize: 12),
@@ -753,7 +754,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // Haftungsausschluss
                     Card(
                       color: AppColors.surfaceDark,
@@ -761,7 +762,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: EdgeInsets.all(16.0),
                         child: Row(
                           children: [
-                            Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                            Icon(Icons.warning_amber_rounded,
+                                color: Colors.orange),
                             SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -808,7 +810,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Center(
                       child: TextButton.icon(
                         onPressed: _showDeleteAccountDialog,
-                        icon: const Icon(Icons.delete_forever, color: Colors.red),
+                        icon:
+                            const Icon(Icons.delete_forever, color: Colors.red),
                         label: const Text(
                           'Konto vollständig löschen',
                           style: TextStyle(color: Colors.red),

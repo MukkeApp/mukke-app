@@ -13,7 +13,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _waveController;
   late AnimationController _pulseController;
   late AnimationController _glowController;
-  
+
   final List<Map<String, dynamic>> menuItems = [
     {
       'label': 'Profil',
@@ -92,19 +92,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    
+
     // Wave Animation für Hintergrund
     _waveController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat();
-    
+
     // Pulse Animation für Logo
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     // Glow Animation
     _glowController = AnimationController(
       duration: const Duration(seconds: 1),
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               );
             },
           ),
-          
+
           // Hauptinhalt
           SafeArea(
             child: Column(
@@ -167,8 +167,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: RadialGradient(
                                 colors: [
-                                  const Color(0xFF00BFFF).withOpacity(0.3 * _glowController.value),
-                                  const Color(0xFFFF1493).withOpacity(0.1 * _glowController.value),
+                                  const Color(0xFF00BFFF)
+                                      .withOpacity(0.3 * _glowController.value),
+                                  const Color(0xFFFF1493)
+                                      .withOpacity(0.1 * _glowController.value),
                                   Colors.transparent,
                                 ],
                               ),
@@ -176,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           );
                         },
                       ),
-                      
+
                       // Mukke Logo
                       AnimatedBuilder(
                         animation: _pulseController,
@@ -193,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                   size: const Size(250, 120),
                                 ),
-                                
+
                                 // MUKKE Text
                                 ShaderMask(
                                   shaderCallback: (bounds) => LinearGradient(
@@ -235,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           );
                         },
                       ),
-                      
+
                       // Untertitel
                       Positioned(
                         bottom: 10,
@@ -252,14 +254,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                
+
                 // Menü Grid
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
@@ -272,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                
+
                 // Bottom Wave
                 SizedBox(
                   height: 60,
@@ -366,34 +369,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 // Wave Background Painter
 class WaveBackgroundPainter extends CustomPainter {
   final double animation;
-  
+
   WaveBackgroundPainter({required this.animation});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    
+
     for (int i = 0; i < 5; i++) {
       paint.color = const Color(0xFF00BFFF).withOpacity(0.1 - (i * 0.02));
-      
+
       final path = Path();
       const waveHeight = 20.0;
       final waveLength = size.width / 3;
       final yOffset = size.height * 0.3 + (i * 30);
-      
+
       path.moveTo(0, yOffset);
-      
+
       for (double x = 0; x <= size.width; x++) {
-        final y = yOffset + math.sin((x / waveLength + animation * 2 * math.pi)) * waveHeight;
+        final y = yOffset +
+            math.sin((x / waveLength + animation * 2 * math.pi)) * waveHeight;
         path.lineTo(x, y);
       }
-      
+
       canvas.drawPath(path, paint);
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
@@ -401,27 +405,30 @@ class WaveBackgroundPainter extends CustomPainter {
 // Sound Waves Painter für Logo
 class SoundWavesPainter extends CustomPainter {
   final double animation;
-  
+
   SoundWavesPainter({required this.animation});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
-    
+
     final centerY = size.height / 2;
     const barWidth = 4.0;
     const barSpacing = 8.0;
     const barCount = 30;
-    
+
     for (int i = 0; i < barCount; i++) {
-      final x = (size.width / 2) - (barCount * (barWidth + barSpacing) / 2) + i * (barWidth + barSpacing);
+      final x = (size.width / 2) -
+          (barCount * (barWidth + barSpacing) / 2) +
+          i * (barWidth + barSpacing);
       final normalizedPosition = (i - barCount / 2).abs() / (barCount / 2);
       final baseHeight = (1 - normalizedPosition) * 40;
-      final animatedHeight = baseHeight * (0.5 + 0.5 * math.sin(animation * 2 * math.pi + i * 0.1));
-      
+      final animatedHeight = baseHeight *
+          (0.5 + 0.5 * math.sin(animation * 2 * math.pi + i * 0.1));
+
       // Gradient effect
       if (i < barCount / 2) {
         paint.color = Color.lerp(
@@ -436,7 +443,7 @@ class SoundWavesPainter extends CustomPainter {
           (i - barCount / 2) / (barCount / 2),
         )!;
       }
-      
+
       canvas.drawLine(
         Offset(x, centerY - animatedHeight / 2),
         Offset(x, centerY + animatedHeight / 2),
@@ -444,7 +451,7 @@ class SoundWavesPainter extends CustomPainter {
       );
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
@@ -452,43 +459,46 @@ class SoundWavesPainter extends CustomPainter {
 // Bottom Wave Painter
 class BottomWavePainter extends CustomPainter {
   final double animation;
-  
+
   BottomWavePainter({required this.animation});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill;
-    
+    final paint = Paint()..style = PaintingStyle.fill;
+
     // Erste Welle - Pink
     paint.color = const Color(0xFFFF1493).withOpacity(0.3);
     final path1 = Path();
     path1.moveTo(0, size.height);
-    
+
     for (double x = 0; x <= size.width; x++) {
-      final y = 20 + math.sin((x / size.width * 2 * math.pi) + animation * 2 * math.pi) * 10;
+      final y = 20 +
+          math.sin((x / size.width * 2 * math.pi) + animation * 2 * math.pi) *
+              10;
       path1.lineTo(x, y);
     }
-    
+
     path1.lineTo(size.width, size.height);
     path1.close();
     canvas.drawPath(path1, paint);
-    
+
     // Zweite Welle - Blau
     paint.color = const Color(0xFF00BFFF).withOpacity(0.3);
     final path2 = Path();
     path2.moveTo(0, size.height);
-    
+
     for (double x = 0; x <= size.width; x++) {
-      final y = 30 + math.sin((x / size.width * 2 * math.pi) - animation * 2 * math.pi) * 15;
+      final y = 30 +
+          math.sin((x / size.width * 2 * math.pi) - animation * 2 * math.pi) *
+              15;
       path2.lineTo(x, y);
     }
-    
+
     path2.lineTo(size.width, size.height);
     path2.close();
     canvas.drawPath(path2, paint);
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

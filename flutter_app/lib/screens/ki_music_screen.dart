@@ -10,12 +10,13 @@ class KiMusicScreen extends StatefulWidget {
   State<KiMusicScreen> createState() => _KiMusicScreenState();
 }
 
-class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateMixin {
+class _KiMusicScreenState extends State<KiMusicScreen>
+    with TickerProviderStateMixin {
   // Text Controllers
   final TextEditingController _songTitleController = TextEditingController();
   final TextEditingController _lyricsController = TextEditingController();
   final TextEditingController _promptController = TextEditingController();
-  
+
   // Animation Controllers
   late AnimationController _waveAnimationController;
   late AnimationController _pulseAnimationController;
@@ -31,18 +32,37 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
   bool _useCustomLyrics = false;
   double _generationProgress = 0.0;
   String _generationStatus = '';
-  
+
   // Genre & Mood Lists
   final List<String> _genres = [
-    'Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Jazz', 'Classical',
-    'R&B', 'Country', 'Metal', 'Reggae', 'Blues', 'Folk'
+    'Pop',
+    'Rock',
+    'Hip-Hop',
+    'Electronic',
+    'Jazz',
+    'Classical',
+    'R&B',
+    'Country',
+    'Metal',
+    'Reggae',
+    'Blues',
+    'Folk'
   ];
-  
+
   final List<String> _moods = [
-    'Happy', 'Sad', 'Energetic', 'Calm', 'Romantic', 'Aggressive',
-    'Mysterious', 'Uplifting', 'Dark', 'Dreamy', 'Nostalgic'
+    'Happy',
+    'Sad',
+    'Energetic',
+    'Calm',
+    'Romantic',
+    'Aggressive',
+    'Mysterious',
+    'Uplifting',
+    'Dark',
+    'Dreamy',
+    'Nostalgic'
   ];
-  
+
   // Instrument Selection
   final Map<String, bool> _instruments = {
     'Piano': true,
@@ -60,18 +80,18 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
     super.initState();
     _initializeAnimations();
   }
-  
+
   void _initializeAnimations() {
     _waveAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    
+
     _pulseAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.95,
       end: 1.05,
@@ -80,7 +100,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       curve: Curves.easeInOut,
     ));
   }
-  
+
   @override
   void dispose() {
     _songTitleController.dispose();
@@ -90,19 +110,19 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
     _pulseAnimationController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _generateMusic() async {
     if (_songTitleController.text.isEmpty) {
       _showSnackBar('Bitte gib einen Songtitel ein');
       return;
     }
-    
+
     setState(() {
       _isGenerating = true;
       _generationProgress = 0.0;
       _generationStatus = 'KI wird initialisiert...';
     });
-    
+
     // Simulierte Musikgenerierung mit Fortschritt
     for (int i = 0; i <= 100; i += 5) {
       await Future.delayed(const Duration(milliseconds: 200));
@@ -111,14 +131,14 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
         _updateGenerationStatus(i);
       });
     }
-    
+
     setState(() {
       _isGenerating = false;
     });
-    
+
     _showSuccessDialog();
   }
-  
+
   void _updateGenerationStatus(int progress) {
     if (progress < 20) {
       _generationStatus = 'Analysiere Musikparameter...';
@@ -132,7 +152,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       _generationStatus = 'Finalisiere deinen Song...';
     }
   }
-  
+
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -204,7 +224,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -217,7 +237,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,7 +296,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   Widget _buildSongInfoCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -338,7 +358,8 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
               labelStyle: TextStyle(color: Colors.grey[400]),
               hintText: 'z.B. "Ein fröhlicher Sommerhit mit Strandvibes"',
               hintStyle: TextStyle(color: Colors.grey[600]),
-              prefixIcon: const Icon(Icons.description, color: Color(0xFF00BFFF)),
+              prefixIcon:
+                  const Icon(Icons.description, color: Color(0xFF00BFFF)),
               filled: true,
               fillColor: const Color(0xFF1A1A1A),
               border: OutlineInputBorder(
@@ -359,7 +380,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   Widget _buildParametersCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -409,7 +430,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   Widget _buildSlider(
     String label,
     String value,
@@ -440,7 +461,8 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
               decoration: BoxDecoration(
                 color: const Color(0xFF1A1A1A),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFF00BFFF).withOpacity(0.5)),
+                border:
+                    Border.all(color: const Color(0xFF00BFFF).withOpacity(0.5)),
               ),
               child: Text(
                 value,
@@ -514,7 +536,8 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
                 value: _selectedGenre,
                 dropdownColor: const Color(0xFF2D2D2D),
                 style: const TextStyle(color: Colors.white),
-                icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF00BFFF)),
+                icon:
+                    const Icon(Icons.arrow_drop_down, color: Color(0xFF00BFFF)),
                 hint: Text(
                   'Wähle ein Genre',
                   style: TextStyle(color: Colors.grey[400]),
@@ -560,7 +583,8 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
                 value: _selectedMood,
                 dropdownColor: const Color(0xFF2D2D2D),
                 style: const TextStyle(color: Colors.white),
-                icon: const Icon(Icons.arrow_drop_down, color: Color(0xFFFF1493)),
+                icon:
+                    const Icon(Icons.arrow_drop_down, color: Color(0xFFFF1493)),
                 hint: Text(
                   'Wähle eine Stimmung',
                   style: TextStyle(color: Colors.grey[400]),
@@ -686,7 +710,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
         return Icons.mood;
     }
   }
-  
+
   Widget _buildInstrumentsCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -733,9 +757,8 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
                   color: entry.value ? Colors.white : Colors.grey[400],
                 ),
                 side: BorderSide(
-                  color: entry.value
-                      ? const Color(0xFF00BFFF)
-                      : Colors.grey[700]!,
+                  color:
+                      entry.value ? const Color(0xFF00BFFF) : Colors.grey[700]!,
                 ),
               );
             }).toList(),
@@ -767,7 +790,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   Widget _buildLyricsSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -855,7 +878,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   Widget _buildAdvancedOptions() {
     return ExpansionTile(
       title: Row(
@@ -967,7 +990,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       },
     );
   }
-  
+
   Widget _buildGeneratingView() {
     return Center(
       child: Padding(
@@ -1098,7 +1121,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   void _showHelpDialog() {
     showDialog(
       context: context,
@@ -1191,7 +1214,7 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
       ),
     );
   }
-  
+
   Widget _buildHelpItem(String title, String description) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -1223,48 +1246,49 @@ class _KiMusicScreenState extends State<KiMusicScreen> with TickerProviderStateM
 class WavePainter extends CustomPainter {
   final double animationValue;
   final Color color;
-  
+
   WavePainter({
     required this.animationValue,
     required this.color,
   });
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color.withOpacity(0.8)
       ..style = PaintingStyle.fill;
-    
+
     final path = Path();
     const waveHeight = 10.0;
     const waveCount = 3;
-    
+
     path.moveTo(0, size.height / 2);
-    
+
     for (int i = 0; i <= waveCount * 2; i++) {
       final x = (size.width / (waveCount * 2)) * i;
-      final y = size.height / 2 + 
+      final y = size.height / 2 +
           sin((i * pi / waveCount) + (animationValue * 2 * pi)) * waveHeight;
-      
+
       if (i == 0) {
         path.lineTo(x, y);
       } else {
         final controlX = x - (size.width / (waveCount * 4));
-        final controlY = size.height / 2 + 
-            sin(((i - 0.5) * pi / waveCount) + (animationValue * 2 * pi)) * 
-            waveHeight * 1.5;
-        
+        final controlY = size.height / 2 +
+            sin(((i - 0.5) * pi / waveCount) + (animationValue * 2 * pi)) *
+                waveHeight *
+                1.5;
+
         path.quadraticBezierTo(controlX, controlY, x, y);
       }
     }
-    
+
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
-    
+
     canvas.drawPath(path, paint);
   }
-  
+
   @override
   bool shouldRepaint(WavePainter oldDelegate) {
     return oldDelegate.animationValue != animationValue;

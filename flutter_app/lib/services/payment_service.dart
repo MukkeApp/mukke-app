@@ -41,7 +41,10 @@ class PaymentService {
         "payer": {"payment_method": "paypal"},
         "transactions": [
           {
-            "amount": {"total": amount.toStringAsFixed(2), "currency": currency},
+            "amount": {
+              "total": amount.toStringAsFixed(2),
+              "currency": currency
+            },
             "description": "MukkeApp Zahlung"
           }
         ],
