@@ -266,7 +266,7 @@ class _CircularWaveAnimationState extends State<CircularWaveAnimation>
             children: List.generate(widget.waveCount, (index) {
               final delay = index / widget.waveCount;
               final animationValue = (_animation.value + delay) % 1.0;
-              
+
               return Transform.scale(
                 scale: animationValue,
                 child: Container(
@@ -332,10 +332,10 @@ class _AudioVisualizerWaveState extends State<AudioVisualizerWave>
     while (mounted) {
       for (int i = 0; i < _controllers.length; i++) {
         if (!mounted) break;
-        
+
         final controller = _controllers[i];
         final targetHeight = _random.nextDouble();
-        
+
         controller.animateTo(
           targetHeight,
           duration: Duration(
@@ -344,7 +344,7 @@ class _AudioVisualizerWaveState extends State<AudioVisualizerWave>
           curve: Curves.easeInOut,
         );
       }
-      
+
       await Future.delayed(const Duration(milliseconds: 100));
     }
   }
@@ -462,7 +462,8 @@ class LiquidWavePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Background
     final backgroundPaint = Paint()..color = backgroundColor;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
+    canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
 
     // Wave
     final wavePaint = Paint()
@@ -470,30 +471,35 @@ class LiquidWavePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final path = Path();
-    
+
     // Create liquid wave effect
     for (int layer = 0; layer < 3; layer++) {
       path.reset();
-      
+
       final layerOffset = layer * 0.5;
       final amplitude = 50.0 - (layer * 10);
       final frequency = 0.5 + (layer * 0.2);
-      
+
       path.moveTo(0, size.height);
-      
+
       for (double x = 0; x <= size.width; x++) {
         final y = size.height * 0.7 +
-            amplitude * math.sin((x / size.width * math.pi * 2 * frequency) + 
-                (animationValue * math.pi * 2) + layerOffset) +
-            amplitude * 0.5 * math.sin((x / size.width * math.pi * 4 * frequency) + 
-                (animationValue * math.pi * 4) + layerOffset);
-        
+            amplitude *
+                math.sin((x / size.width * math.pi * 2 * frequency) +
+                    (animationValue * math.pi * 2) +
+                    layerOffset) +
+            amplitude *
+                0.5 *
+                math.sin((x / size.width * math.pi * 4 * frequency) +
+                    (animationValue * math.pi * 4) +
+                    layerOffset);
+
         path.lineTo(x, y);
       }
-      
+
       path.lineTo(size.width, size.height);
       path.close();
-      
+
       wavePaint.color = waveColor.withOpacity(0.1 - (layer * 0.03));
       canvas.drawPath(path, wavePaint);
     }
@@ -573,7 +579,7 @@ class LoadingWavePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    
+
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -581,21 +587,21 @@ class LoadingWavePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    
+
     for (double angle = 0; angle < 2 * math.pi; angle += 0.1) {
-      final waveRadius = radius * 0.8 + 
+      final waveRadius = radius * 0.8 +
           radius * 0.2 * math.sin(angle * 4 + animationValue * 2 * math.pi);
-      
+
       final x = center.dx + waveRadius * math.cos(angle);
       final y = center.dy + waveRadius * math.sin(angle);
-      
+
       if (angle == 0) {
         path.moveTo(x, y);
       } else {
         path.lineTo(x, y);
       }
     }
-    
+
     path.close();
     canvas.drawPath(path, paint);
   }

@@ -25,16 +25,16 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
   bool _isCameraInitialized = false;
   bool _isMirrorMode = false;
   bool _isMeasuring = false;
-  
+
   // Speech & TTS
   final FlutterTts _flutterTts = FlutterTts();
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
-  
+
   // Firebase
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
-  
+
   // User Measurements
   Map<String, dynamic> _userMeasurements = {
     'height': 0,
@@ -42,29 +42,59 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
     'clothingSize': '',
     'gender': '',
   };
-  
+
   // Animation Controllers
   late AnimationController _floatController;
   late AnimationController _pulseController;
   late AnimationController _scanController;
-  
+
   // Fashion State
   String _selectedCategory = 'all';
   String _selectedOccasion = '';
   List<Map<String, dynamic>> _currentOutfits = [];
   int _currentOutfitIndex = 0;
   final List<Map<String, dynamic>> _shoppingCart = [];
-  
+
   // Categories
   final List<Map<String, dynamic>> _categories = [
-    {'id': 'all', 'name': 'Alle', 'icon': Icons.all_inclusive, 'color': AppColors.primary},
-    {'id': 'casual', 'name': 'Casual', 'icon': Icons.weekend, 'color': Colors.green},
-    {'id': 'business', 'name': 'Business', 'icon': Icons.business_center, 'color': Colors.blue},
-    {'id': 'party', 'name': 'Party', 'icon': Icons.nightlife, 'color': AppColors.accent},
-    {'id': 'sport', 'name': 'Sport', 'icon': Icons.sports, 'color': Colors.orange},
-    {'id': 'accessories', 'name': 'Accessoires', 'icon': Icons.watch, 'color': Colors.purple},
+    {
+      'id': 'all',
+      'name': 'Alle',
+      'icon': Icons.all_inclusive,
+      'color': AppColors.primary
+    },
+    {
+      'id': 'casual',
+      'name': 'Casual',
+      'icon': Icons.weekend,
+      'color': Colors.green
+    },
+    {
+      'id': 'business',
+      'name': 'Business',
+      'icon': Icons.business_center,
+      'color': Colors.blue
+    },
+    {
+      'id': 'party',
+      'name': 'Party',
+      'icon': Icons.nightlife,
+      'color': AppColors.accent
+    },
+    {
+      'id': 'sport',
+      'name': 'Sport',
+      'icon': Icons.sports,
+      'color': Colors.orange
+    },
+    {
+      'id': 'accessories',
+      'name': 'Accessoires',
+      'icon': Icons.watch,
+      'color': Colors.purple
+    },
   ];
-  
+
   // Sample Outfits (später durch echte Daten ersetzen)
   final List<Map<String, dynamic>> _allOutfits = [
     {
@@ -132,12 +162,12 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _scanController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -153,7 +183,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
   Future<void> _checkPermissions() async {
     final cameraStatus = await Permission.camera.request();
     final micStatus = await Permission.microphone.request();
-    
+
     if (cameraStatus.isGranted && micStatus.isGranted) {
       await _initializeCamera();
       await _speech.initialize();
@@ -168,15 +198,15 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
           (camera) => camera.lensDirection == CameraLensDirection.front,
           orElse: () => _cameras!.first,
         );
-        
+
         _cameraController = CameraController(
           frontCamera,
           ResolutionPreset.high,
           enableAudio: false,
         );
-        
+
         await _cameraController!.initialize();
-        
+
         if (mounted) {
           setState(() {
             _isCameraInitialized = true;
@@ -192,7 +222,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       final doc = await _firestore.collection('users').doc(user.uid).get();
       if (doc.exists) {
         final data = doc.data()!;
@@ -228,15 +258,15 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
       await _checkPermissions();
       return;
     }
-    
+
     setState(() {
       _isMirrorMode = !_isMirrorMode;
     });
-    
+
     if (_isMirrorMode) {
       _speak('Spiegel-Modus aktiviert. Ich vermesse dich jetzt!');
       HapticFeedback.mediumImpact();
-      
+
       // Starte Größenmessung nach 2 Sekunden
       Future.delayed(const Duration(seconds: 2), () {
         _startMeasurement();
@@ -248,13 +278,14 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
 
   void _startMeasurement() {
     setState(() => _isMeasuring = true);
-    
-    _speak('Bitte gehe ein paar Schritte zurück, damit ich deine Größe messen kann.');
-    
+
+    _speak(
+        'Bitte gehe ein paar Schritte zurück, damit ich deine Größe messen kann.');
+
     // Simuliere Messung (später durch echte KI-Messung ersetzen)
     Future.delayed(const Duration(seconds: 3), () {
       setState(() => _isMeasuring = false);
-      
+
       // Zeige Größenbestätigung
       showDialog(
         context: context,
@@ -318,7 +349,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
     final shoeSizeController = TextEditingController(
       text: _userMeasurements['shoeSize'].toString(),
     );
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -357,7 +388,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Körpergröße
               TextField(
                 controller: heightController,
@@ -366,7 +397,8 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 decoration: InputDecoration(
                   labelText: 'Körpergröße (cm)',
                   labelStyle: const TextStyle(color: Colors.white70),
-                  prefixIcon: const Icon(Icons.height, color: AppColors.primary),
+                  prefixIcon:
+                      const Icon(Icons.height, color: AppColors.primary),
                   suffixText: 'cm',
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.05),
@@ -377,7 +409,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Schuhgröße
               TextField(
                 controller: shoeSizeController,
@@ -386,7 +418,8 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 decoration: InputDecoration(
                   labelText: 'Schuhgröße',
                   labelStyle: const TextStyle(color: Colors.white70),
-                  prefixIcon: const Icon(Icons.do_not_step, color: AppColors.primary),
+                  prefixIcon:
+                      const Icon(Icons.do_not_step, color: AppColors.primary),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.05),
                   border: OutlineInputBorder(
@@ -396,7 +429,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Kleidergröße
               DropdownButtonFormField<String>(
                 value: _userMeasurements['clothingSize'].isEmpty
@@ -405,7 +438,8 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 decoration: InputDecoration(
                   labelText: 'Kleidergröße',
                   labelStyle: const TextStyle(color: Colors.white70),
-                  prefixIcon: const Icon(Icons.checkroom, color: AppColors.primary),
+                  prefixIcon:
+                      const Icon(Icons.checkroom, color: AppColors.primary),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.05),
                   border: OutlineInputBorder(
@@ -426,20 +460,22 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                 },
               ),
               const SizedBox(height: 24),
-              
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
                     // Speichere Größen
                     setState(() {
-                      _userMeasurements['height'] = int.tryParse(heightController.text) ?? 0;
-                      _userMeasurements['shoeSize'] = int.tryParse(shoeSizeController.text) ?? 0;
+                      _userMeasurements['height'] =
+                          int.tryParse(heightController.text) ?? 0;
+                      _userMeasurements['shoeSize'] =
+                          int.tryParse(shoeSizeController.text) ?? 0;
                     });
-                    
+
                     // In Firebase speichern
                     await _saveMeasurements();
-                    
+
                     Navigator.pop(context);
                     _showOutfitSuggestions();
                   },
@@ -470,7 +506,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       await _firestore.collection('users').doc(user.uid).update({
         'height': _userMeasurements['height'],
         'shoeSize': _userMeasurements['shoeSize'],
@@ -483,7 +519,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
 
   void _showOutfitSuggestions() {
     _speak('Perfekt! Lass mich dir passende Outfits zeigen.');
-    
+
     // Zeige Anlass-Auswahl
     showModalBottomSheet(
       context: context,
@@ -526,10 +562,12 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.5,
                   children: [
-                    _buildOccasionCard('Date', Icons.favorite, AppColors.accent),
+                    _buildOccasionCard(
+                        'Date', Icons.favorite, AppColors.accent),
                     _buildOccasionCard('Business', Icons.business, Colors.blue),
                     _buildOccasionCard('Party', Icons.nightlife, Colors.purple),
-                    _buildOccasionCard('Sport', Icons.fitness_center, Colors.orange),
+                    _buildOccasionCard(
+                        'Sport', Icons.fitness_center, Colors.orange),
                     _buildOccasionCard('Alltag', Icons.home, Colors.green),
                     _buildOccasionCard('Event', Icons.stars, Colors.amber),
                   ],
@@ -549,7 +587,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
           _selectedOccasion = occasion;
         });
         Navigator.pop(context);
-        
+
         // Zeige passende Outfits im Spiegel
         _speak('Super Wahl! Hier sind meine Vorschläge für $occasion.');
       },
@@ -593,10 +631,11 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
   void _nextOutfit() {
     if (_currentOutfits.isNotEmpty) {
       setState(() {
-        _currentOutfitIndex = (_currentOutfitIndex + 1) % _currentOutfits.length;
+        _currentOutfitIndex =
+            (_currentOutfitIndex + 1) % _currentOutfits.length;
       });
       HapticFeedback.lightImpact();
-      
+
       final outfit = _currentOutfits[_currentOutfitIndex];
       _speak('Wie wäre es mit ${outfit["name"]}?');
     }
@@ -605,10 +644,12 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
   void _previousOutfit() {
     if (_currentOutfits.isNotEmpty) {
       setState(() {
-        _currentOutfitIndex = (_currentOutfitIndex - 1 + _currentOutfits.length) % _currentOutfits.length;
+        _currentOutfitIndex =
+            (_currentOutfitIndex - 1 + _currentOutfits.length) %
+                _currentOutfits.length;
       });
       HapticFeedback.lightImpact();
-      
+
       final outfit = _currentOutfits[_currentOutfitIndex];
       _speak('Oder vielleicht ${outfit["name"]}?');
     }
@@ -618,9 +659,9 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
     setState(() {
       _shoppingCart.add(outfit);
     });
-    
+
     HapticFeedback.mediumImpact();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${outfit["name"]} wurde zum Warenkorb hinzugefügt'),
@@ -632,7 +673,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
         ),
       ),
     );
-    
+
     _speak('Super Wahl! ${outfit["name"]} ist jetzt in deinem Warenkorb.');
   }
 
@@ -659,7 +700,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
   void _startVoiceCommand() async {
     if (!_isListening && await _speech.hasPermission) {
       setState(() => _isListening = true);
-      
+
       await _speech.listen(
         onResult: (result) {
           if (result.finalResult) {
@@ -678,7 +719,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
 
   void _processVoiceCommand(String command) {
     command = command.toLowerCase();
-    
+
     if (command.contains('weiter') || command.contains('nächste')) {
       _nextOutfit();
     } else if (command.contains('zurück') || command.contains('vorherige')) {
@@ -746,7 +787,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
         children: [
           // Main Content
           if (!_isMirrorMode) _buildMainView() else _buildMirrorView(),
-          
+
           // Voice Command Indicator
           if (_isListening)
             Positioned(
@@ -803,7 +844,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
             itemBuilder: (context, index) {
               final category = _categories[index];
               final isSelected = _selectedCategory == category['id'];
-              
+
               return GestureDetector(
                 onTap: () {
                   setState(() {
@@ -833,22 +874,17 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                     children: [
                       Icon(
                         category['icon'],
-                        color: isSelected
-                            ? category['color']
-                            : Colors.white70,
+                        color: isSelected ? category['color'] : Colors.white70,
                         size: 28,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         category['name'],
                         style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : Colors.white70,
+                          color: isSelected ? Colors.white : Colors.white70,
                           fontSize: 12,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -858,7 +894,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
             },
           ),
         ),
-        
+
         // Mirror Mode Button
         Padding(
           padding: const EdgeInsets.all(16),
@@ -913,7 +949,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
             ),
           ),
         ),
-        
+
         // Outfit Grid
         Expanded(
           child: _currentOutfits.isEmpty
@@ -1009,7 +1045,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                       ),
                     ),
                   ),
-                  
+
                   // Info
                   Padding(
                     padding: const EdgeInsets.all(12),
@@ -1098,7 +1134,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
               child: CameraPreview(_cameraController!),
             ),
           ),
-        
+
         // Overlay
         Positioned.fill(
           child: Container(
@@ -1116,7 +1152,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
             ),
           ),
         ),
-        
+
         // Measurement Overlay
         if (_isMeasuring)
           Positioned.fill(
@@ -1131,7 +1167,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
               },
             ),
           ),
-        
+
         // Top Controls
         SafeArea(
           child: Padding(
@@ -1183,7 +1219,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
             ),
           ),
         ),
-        
+
         // Current Outfit Display
         if (!_isMeasuring && _currentOutfits.isNotEmpty)
           Positioned(
@@ -1246,7 +1282,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
               ),
             ),
           ),
-        
+
         // Swipe Instructions
         if (!_isMeasuring && _currentOutfits.isNotEmpty)
           Positioned(
@@ -1272,7 +1308,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
               ],
             ),
           ),
-        
+
         // Bottom Actions
         if (!_isMeasuring)
           Positioned(
@@ -1296,7 +1332,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                   ),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Add to Cart
                 Expanded(
                   child: GestureDetector(
@@ -1342,7 +1378,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
                   ),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Next
                 Container(
                   decoration: BoxDecoration(
@@ -1360,7 +1396,7 @@ class _MukkeFashionScreenState extends State<MukkeFashionScreen>
               ],
             ),
           ),
-        
+
         // Voice Command Button
         Positioned(
           bottom: 120,
@@ -1384,7 +1420,7 @@ class OutfitDetailSheet extends StatefulWidget {
   final Map<String, dynamic> outfit;
   final VoidCallback onAddToCart;
   final VoidCallback onTryOn;
-  
+
   const OutfitDetailSheet({
     super.key,
     required this.outfit,
@@ -1399,7 +1435,7 @@ class OutfitDetailSheet extends StatefulWidget {
 class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
   String _selectedColor = '';
   String _selectedSize = '';
-  
+
   @override
   void initState() {
     super.initState();
@@ -1425,7 +1461,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Image
           Container(
             height: 200,
@@ -1447,7 +1483,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Name & Price
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1481,7 +1517,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Description
           Text(
             widget.outfit['description'],
@@ -1492,7 +1528,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Color Selection
           const Text(
             'Farbe wählen',
@@ -1511,7 +1547,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
               itemBuilder: (context, index) {
                 final color = widget.outfit['colors'][index];
                 final isSelected = _selectedColor == color;
-                
+
                 return GestureDetector(
                   onTap: () {
                     setState(() {
@@ -1540,9 +1576,8 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
                       color,
                       style: TextStyle(
                         color: Colors.white,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -1551,7 +1586,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Size Selection
           const Text(
             'Größe wählen',
@@ -1570,7 +1605,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
               itemBuilder: (context, index) {
                 final size = widget.outfit['sizes'][index];
                 final isSelected = _selectedSize == size;
-                
+
                 return GestureDetector(
                   onTap: () {
                     setState(() {
@@ -1597,9 +1632,8 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
                         size,
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -1609,7 +1643,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
             ),
           ),
           const Spacer(),
-          
+
           // Action Buttons
           Row(
             children: [
@@ -1654,7 +1688,7 @@ class _OutfitDetailSheetState extends State<OutfitDetailSheet> {
 class ShoppingCartScreen extends StatelessWidget {
   final List<Map<String, dynamic>> items;
   final Function(int) onRemove;
-  
+
   const ShoppingCartScreen({
     super.key,
     required this.items,
@@ -1778,7 +1812,7 @@ class ShoppingCartScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                
+
                 // Checkout
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -1850,7 +1884,7 @@ class ShoppingCartScreen extends StatelessWidget {
 // Measurement Painter
 class MeasurementPainter extends CustomPainter {
   final double animation;
-  
+
   MeasurementPainter({required this.animation});
 
   @override
@@ -1859,7 +1893,7 @@ class MeasurementPainter extends CustomPainter {
       ..color = AppColors.primary
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    
+
     // Scan Line
     final y = size.height * animation;
     canvas.drawLine(
@@ -1867,11 +1901,11 @@ class MeasurementPainter extends CustomPainter {
       Offset(size.width, y),
       paint,
     );
-    
+
     // Corner Markers
     paint.strokeWidth = 4;
     const cornerSize = 50.0;
-    
+
     // Top Left
     canvas.drawLine(
       const Offset(20, 20),
@@ -1883,7 +1917,7 @@ class MeasurementPainter extends CustomPainter {
       const Offset(20, 20 + cornerSize),
       paint,
     );
-    
+
     // Top Right
     canvas.drawLine(
       Offset(size.width - 20 - cornerSize, 20),
@@ -1895,7 +1929,7 @@ class MeasurementPainter extends CustomPainter {
       Offset(size.width - 20, 20 + cornerSize),
       paint,
     );
-    
+
     // Bottom Left
     canvas.drawLine(
       Offset(20, size.height - 20 - cornerSize),
@@ -1907,7 +1941,7 @@ class MeasurementPainter extends CustomPainter {
       Offset(20 + cornerSize, size.height - 20),
       paint,
     );
-    
+
     // Bottom Right
     canvas.drawLine(
       Offset(size.width - 20 - cornerSize, size.height - 20),
@@ -1924,4 +1958,3 @@ class MeasurementPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-                

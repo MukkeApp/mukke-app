@@ -10,7 +10,7 @@ class MukkeSportScreen extends StatefulWidget {
   State<MukkeSportScreen> createState() => _MukkeSportScreenState();
 }
 
-class _MukkeSportScreenState extends State<MukkeSportScreen> 
+class _MukkeSportScreenState extends State<MukkeSportScreen>
     with TickerProviderStateMixin {
   // Form Controllers
   final _formKey = GlobalKey<FormState>();
@@ -18,13 +18,13 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
-  
+
   // Animation Controllers
   late AnimationController _avatarAnimationController;
   late AnimationController _pulseAnimationController;
   late Animation<double> _avatarAnimation;
   late Animation<double> _pulseAnimation;
-  
+
   // State Variables
   String _selectedGoal = 'Fitness';
   String _fitnessLevel = 'Anfänger';
@@ -32,7 +32,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
   bool _isTraining = false;
   bool _isCameraActive = false;
   bool _isSpeaking = false;
-  
+
   // Training Data
   String _currentExercise = '';
   int _reps = 0;
@@ -40,7 +40,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
   int _sets = 0;
   int _targetSets = 3;
   String _coachMessage = 'Hey! Ich bin Jarviz, dein persönlicher KI-Coach! 💪';
-  
+
   // Goals
   final List<String> _goals = [
     'Fitness',
@@ -51,7 +51,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
     'Beweglichkeit',
     'Rehabilitation',
   ];
-  
+
   // Fitness Levels
   final List<String> _fitnessLevels = [
     'Anfänger',
@@ -59,7 +59,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
     'Profi',
     'Athlet',
   ];
-  
+
   // Mock Exercises
   final List<Map<String, dynamic>> _exercises = [
     {
@@ -98,13 +98,13 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
     _initializeAnimations();
     _loadUserData();
   }
-  
+
   void _initializeAnimations() {
     _avatarAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _avatarAnimation = Tween<double>(
       begin: 0.0,
       end: 10.0,
@@ -112,12 +112,12 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       parent: _avatarAnimationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _pulseAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.95,
       end: 1.05,
@@ -126,7 +126,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       curve: Curves.easeInOut,
     ));
   }
-  
+
   void _loadUserData() {
     // TODO: Load from Firebase/Local Storage
     // Simulierte Daten aus dem Profil
@@ -136,7 +136,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       });
     });
   }
-  
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -182,7 +182,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       body: _isTraining ? _buildTrainingView() : _buildSetupView(),
     );
   }
-  
+
   Widget _buildSetupView() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -205,7 +205,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildAvatarSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -264,9 +264,8 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
               color: const Color(0xFF2D2D2D),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: _isSpeaking 
-                  ? const Color(0xFFFF1493) 
-                  : Colors.grey[700]!,
+                color:
+                    _isSpeaking ? const Color(0xFFFF1493) : Colors.grey[700]!,
                 width: _isSpeaking ? 2 : 1,
               ),
             ),
@@ -274,9 +273,8 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
               children: [
                 Icon(
                   _isSpeaking ? Icons.mic : Icons.mic_none,
-                  color: _isSpeaking 
-                    ? const Color(0xFFFF1493) 
-                    : Colors.grey[400],
+                  color:
+                      _isSpeaking ? const Color(0xFFFF1493) : Colors.grey[400],
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -299,7 +297,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildPersonalDataCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -434,7 +432,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildGoalsCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -488,9 +486,8 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
                   color: isSelected ? Colors.white : Colors.grey[400],
                 ),
                 side: BorderSide(
-                  color: isSelected 
-                    ? const Color(0xFFFF1493) 
-                    : Colors.grey[700]!,
+                  color:
+                      isSelected ? const Color(0xFFFF1493) : Colors.grey[700]!,
                 ),
               );
             }).toList(),
@@ -550,7 +547,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildQuickWorkoutSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -589,7 +586,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ],
     );
   }
-  
+
   Widget _buildExerciseCard(Map<String, dynamic> exercise) {
     return Container(
       width: 160,
@@ -669,7 +666,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildStartButton() {
     return ScaleTransition(
       scale: _pulseAnimation,
@@ -709,7 +706,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
@@ -735,23 +732,25 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   void _updateCoachMessage() {
     final messages = {
       'Fitness': 'Super Wahl! Lass uns deine allgemeine Fitness verbessern! 💪',
-      'Muskelaufbau': 'Perfekt! Wir werden deine Muskeln zum Brennen bringen! 🔥',
+      'Muskelaufbau':
+          'Perfekt! Wir werden deine Muskeln zum Brennen bringen! 🔥',
       'Abnehmen': 'Klasse! Gemeinsam schaffen wir deine Traumfigur! 🎯',
       'Ausdauer': 'Excellent! Deine Kondition wird durch die Decke gehen! 🏃',
       'Kraft': 'Stark! Lass uns deine Power auf ein neues Level bringen! ⚡',
-      'Beweglichkeit': 'Toll! Flexibilität ist der Schlüssel zur Gesundheit! 🧘',
+      'Beweglichkeit':
+          'Toll! Flexibilität ist der Schlüssel zur Gesundheit! 🧘',
       'Rehabilitation': 'Gut! Wir gehen es langsam und sicher an! 🩹',
     };
-    
+
     setState(() {
       _coachMessage = messages[_selectedGoal] ?? 'Bereit für dein Training?';
     });
   }
-  
+
   Widget _buildTrainingView() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -770,7 +769,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildTrainingHeader() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -817,7 +816,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildStatItem(
     String label,
     String value,
@@ -847,11 +846,11 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ],
     );
   }
-  
+
   void _startFullTraining() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       setState(() {
         _isTraining = true;
         _currentExercise = 'Aufwärmen';
@@ -859,7 +858,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
         _reps = 0;
         _coachMessage = 'Los geht\'s! Wir starten mit dem Aufwärmen!';
       });
-      
+
       // Simuliere Kamera-Aktivierung
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
@@ -870,7 +869,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       });
     }
   }
-  
+
   void _startQuickWorkout(Map<String, dynamic> exercise) {
     setState(() {
       _isTraining = true;
@@ -881,7 +880,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       _targetReps = 15;
       _coachMessage = 'Schnell-Workout: ${exercise['name']}! Let\'s go!';
     });
-    
+
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isCameraActive = true;
@@ -889,7 +888,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       _startExerciseSimulation();
     });
   }
-  
+
   void _startExerciseSimulation() {
     // Simuliere Übungsausführung mit Feedback
     Timer.periodic(const Duration(seconds: 3), (timer) {
@@ -897,10 +896,10 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
         timer.cancel();
         return;
       }
-      
+
       setState(() {
         _reps++;
-        
+
         // Verschiedene Coach-Nachrichten
         final messages = [
           'Sehr gut! Weiter so!',
@@ -912,7 +911,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
           'Super Tempo!',
           'Fast geschafft!',
         ];
-        
+
         if (_reps == _targetReps ~/ 2) {
           _coachMessage = 'Halbzeit! Du rockst das! 🔥';
         } else if (_reps == _targetReps - 3) {
@@ -935,13 +934,13 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
             _coachMessage = messages[Random().nextInt(messages.length)];
           }
         }
-        
+
         // Simuliere Spracherkennung
         _isSpeaking = Random().nextBool();
       });
     });
   }
-  
+
   void _showRestTimer() {
     int restSeconds = 30;
     showDialog(
@@ -960,7 +959,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
                 restSeconds--;
               });
             });
-            
+
             return AlertDialog(
               backgroundColor: const Color(0xFF2D2D2D),
               shape: RoundedRectangleBorder(
@@ -1018,7 +1017,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       },
     );
   }
-  
+
   void _completeExercise() {
     showDialog(
       context: context,
@@ -1153,7 +1152,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   void _stopTraining() {
     setState(() {
       _isTraining = false;
@@ -1164,7 +1163,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       _coachMessage = 'Training beendet! Du warst großartig! 🎉';
     });
   }
-  
+
   void _showLeaderboard() {
     showModalBottomSheet(
       context: context,
@@ -1215,18 +1214,18 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: index < 3 
-                        ? [
-                            Colors.amber.withOpacity(0.2),
-                            Colors.grey.withOpacity(0.2),
-                            Colors.brown.withOpacity(0.2),
-                          ][index]
-                        : const Color(0xFF1A1A1A),
+                      color: index < 3
+                          ? [
+                              Colors.amber.withOpacity(0.2),
+                              Colors.grey.withOpacity(0.2),
+                              Colors.brown.withOpacity(0.2),
+                            ][index]
+                          : const Color(0xFF1A1A1A),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: index < 3
-                          ? [Colors.amber, Colors.grey, Colors.brown][index]
-                          : Colors.grey[700]!,
+                            ? [Colors.amber, Colors.grey, Colors.brown][index]
+                            : Colors.grey[700]!,
                       ),
                     ),
                     child: Row(
@@ -1289,7 +1288,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   void _showSettings() {
     showDialog(
       context: context,
@@ -1364,16 +1363,14 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildCameraView() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _isCameraActive 
-            ? const Color(0xFF00BFFF) 
-            : Colors.grey[700]!,
+          color: _isCameraActive ? const Color(0xFF00BFFF) : Colors.grey[700]!,
           width: 3,
         ),
       ),
@@ -1381,29 +1378,29 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
         children: [
           Center(
             child: _isCameraActive
-              ? const Icon(
-                  Icons.videocam,
-                  color: Colors.white,
-                  size: 80,
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.videocam_off,
-                      color: Colors.grey[600],
-                      size: 80,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Kamera wird aktiviert...',
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 18,
+                ? const Icon(
+                    Icons.videocam,
+                    color: Colors.white,
+                    size: 80,
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.videocam_off,
+                        color: Colors.grey[600],
+                        size: 80,
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Kamera wird aktiviert...',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
           ),
           Positioned(
             top: 20,
@@ -1449,9 +1446,9 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
                 children: [
                   Icon(
                     Icons.mic,
-                    color: _isSpeaking 
-                      ? const Color(0xFFFF1493) 
-                      : Colors.grey[400],
+                    color: _isSpeaking
+                        ? const Color(0xFFFF1493)
+                        : Colors.grey[400],
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -1471,7 +1468,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ),
     );
   }
-  
+
   Widget _buildTrainingControls() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1497,7 +1494,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ],
     );
   }
-  
+
   Widget _buildControlButton(
     IconData icon,
     String label,
@@ -1530,7 +1527,7 @@ class _MukkeSportScreenState extends State<MukkeSportScreen>
       ],
     );
   }
-  
+
   Widget _buildTrainingStats() {
     return Container(
       padding: const EdgeInsets.all(20),

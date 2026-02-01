@@ -8,10 +8,14 @@ class Env {
 
   // ===== Firebase =====
   static String get firebaseApiKey => dotenv.maybeGet('FIREBASE_API_KEY') ?? '';
-  static String get firebaseAuthDomain => dotenv.maybeGet('FIREBASE_AUTH_DOMAIN') ?? '';
-  static String get firebaseProjectId => dotenv.maybeGet('FIREBASE_PROJECT_ID') ?? '';
-  static String get firebaseStorageBucket => dotenv.maybeGet('FIREBASE_STORAGE_BUCKET') ?? '';
-  static String get firebaseMessagingSenderId => dotenv.maybeGet('FIREBASE_MESSAGING_SENDER_ID') ?? '';
+  static String get firebaseAuthDomain =>
+      dotenv.maybeGet('FIREBASE_AUTH_DOMAIN') ?? '';
+  static String get firebaseProjectId =>
+      dotenv.maybeGet('FIREBASE_PROJECT_ID') ?? '';
+  static String get firebaseStorageBucket =>
+      dotenv.maybeGet('FIREBASE_STORAGE_BUCKET') ?? '';
+  static String get firebaseMessagingSenderId =>
+      dotenv.maybeGet('FIREBASE_MESSAGING_SENDER_ID') ?? '';
   static String get firebaseAppId => dotenv.maybeGet('FIREBASE_APP_ID') ?? '';
 
   // ===== PayPal (NOTE: do NOT ship secrets in a mobile app) =====

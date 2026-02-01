@@ -9,7 +9,8 @@ class ThemeProvider extends ChangeNotifier {
 
   // Theme umschalten
   void toggleTheme() {
-    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    _themeMode =
+        _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
   }
 
@@ -25,7 +26,6 @@ class ThemeProvider extends ChangeNotifier {
       brightness: Brightness.light,
       primaryColor: const Color(0xFF00BFFF),
       scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-      
       colorScheme: const ColorScheme.light(
         primary: Color(0xFF00BFFF),
         secondary: Color(0xFFFF1493),
@@ -38,7 +38,6 @@ class ThemeProvider extends ChangeNotifier {
         onBackground: Colors.black,
         onError: Colors.white,
       ),
-      
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -51,7 +50,6 @@ class ThemeProvider extends ChangeNotifier {
         ),
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00BFFF),
@@ -63,7 +61,6 @@ class ThemeProvider extends ChangeNotifier {
           elevation: 2,
         ),
       ),
-      
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: const Color(0xFF00BFFF),
@@ -73,11 +70,11 @@ class ThemeProvider extends ChangeNotifier {
           ),
         ),
       ),
-      
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.grey[100],
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -95,12 +92,10 @@ class ThemeProvider extends ChangeNotifier {
           borderSide: const BorderSide(color: Color(0xFFF44336), width: 2),
         ),
       ),
-
-        cardTheme: const CardThemeData(
-          color: Colors.white,
-          elevation: 2,
-        ),
-      
+      cardTheme: const CardThemeData(
+        color: Colors.white,
+        elevation: 2,
+      ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         elevation: 0,
         selectedItemColor: Color(0xFF00BFFF),
@@ -109,7 +104,6 @@ class ThemeProvider extends ChangeNotifier {
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      
       fontFamily: 'Poppins',
     );
   }
@@ -121,7 +115,6 @@ class ThemeProvider extends ChangeNotifier {
       brightness: Brightness.dark,
       primaryColor: const Color(0xFF00BFFF),
       scaffoldBackgroundColor: const Color(0xFF1A1A1A),
-      
       colorScheme: const ColorScheme.dark(
         primary: Color(0xFF00BFFF),
         secondary: Color(0xFFFF1493),
@@ -134,7 +127,6 @@ class ThemeProvider extends ChangeNotifier {
         onBackground: Colors.white,
         onError: Colors.white,
       ),
-      
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -147,7 +139,6 @@ class ThemeProvider extends ChangeNotifier {
         ),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00BFFF),
@@ -159,7 +150,6 @@ class ThemeProvider extends ChangeNotifier {
           elevation: 4,
         ),
       ),
-      
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: const Color(0xFF00BFFF),
@@ -169,11 +159,11 @@ class ThemeProvider extends ChangeNotifier {
           ),
         ),
       ),
-      
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFF2D2D2D),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[800]!),
@@ -193,12 +183,10 @@ class ThemeProvider extends ChangeNotifier {
         labelStyle: TextStyle(color: Colors.grey[400]),
         hintStyle: TextStyle(color: Colors.grey[600]),
       ),
-
-        cardTheme: const CardThemeData(
-          color: Colors.white,
-          elevation: 2,
-        ),
-      
+      cardTheme: const CardThemeData(
+        color: Colors.white,
+        elevation: 2,
+      ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         elevation: 0,
         backgroundColor: Color(0xFF2D2D2D),
@@ -208,12 +196,10 @@ class ThemeProvider extends ChangeNotifier {
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      
       dividerTheme: const DividerThemeData(
         color: Color(0xFF3D3D3D),
         thickness: 1,
       ),
-      
       fontFamily: 'Poppins',
     );
   }

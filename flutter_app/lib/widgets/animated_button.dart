@@ -105,7 +105,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: widget.gradientColors ?? [AppColors.primary, AppColors.accent],
+                  colors: widget.gradientColors ??
+                      [AppColors.primary, AppColors.accent],
                 ),
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 boxShadow: [
@@ -230,7 +231,8 @@ class _PulseAnimationButtonState extends State<PulseAnimationButton>
                     height: widget.size,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: widget.pulseColor.withOpacity(_opacityAnimation.value),
+                      color: widget.pulseColor
+                          .withOpacity(_opacityAnimation.value),
                     ),
                   ),
                 );

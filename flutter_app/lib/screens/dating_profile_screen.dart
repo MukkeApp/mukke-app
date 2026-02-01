@@ -19,11 +19,11 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
   final _auth = FirebaseAuth.instance;
   final _storage = FirebaseStorage.instance;
   final _imagePicker = ImagePicker();
-  
+
   // PageController für Step-by-Step Form
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  
+
   // Controllers
   final _aboutMeController = TextEditingController();
   final _lookingForController = TextEditingController();
@@ -31,11 +31,11 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
   final _hobbiesController = TextEditingController();
   final _jobController = TextEditingController();
   final _educationController = TextEditingController();
-  
+
   // State Variables
   bool _isLoading = false;
   bool _isSaving = false;
-  
+
   // Dating Profil Daten
   String? _relationshipGoal;
   String? _hasKids;
@@ -47,14 +47,14 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
   String? _pets;
   String? _exercise;
   String? _diet;
-  
+
   // Weitere Bilder (max 5)
   final List<File?> _additionalImages = List.filled(5, null);
   List<String> _uploadedImageUrls = [];
-  
+
   // Matching-Fragen Antworten
   Map<String, int> _matchingAnswers = {};
-  
+
   // Die 10 Matching-Fragen
   final List<Map<String, dynamic>> _matchingQuestions = [
     {
@@ -158,7 +158,8 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
     },
     {
       'id': 'q10',
-      'question': 'Möchtest du viel an der Seite deines Partners/Partnerin sein?',
+      'question':
+          'Möchtest du viel an der Seite deines Partners/Partnerin sein?',
       'options': [
         'Ja, ich mag es wenn alles stimmt',
         'Nein, ich mach gerne mein eigenes ding',
@@ -189,7 +190,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
 
   Future<void> _loadDatingProfile() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final user = _auth.currentUser;
       if (user == null) return;
@@ -200,10 +201,10 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
           .collection('dating')
           .doc('profile')
           .get();
-      
+
       if (doc.exists) {
         final data = doc.data()!;
-        
+
         // Textfelder
         _aboutMeController.text = data['aboutMe'] ?? '';
         _lookingForController.text = data['lookingFor'] ?? '';
@@ -211,7 +212,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
         _hobbiesController.text = data['hobbies'] ?? '';
         _jobController.text = data['job'] ?? '';
         _educationController.text = data['education'] ?? '';
-        
+
         // Auswahlfelder
         _relationshipGoal = data['relationshipGoal'];
         _hasKids = data['hasKids'];
@@ -223,12 +224,12 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
         _pets = data['pets'];
         _exercise = data['exercise'];
         _diet = data['diet'];
-        
+
         // Bilder
         if (data['additionalImages'] != null) {
           _uploadedImageUrls = List<String>.from(data['additionalImages']);
         }
-        
+
         // Matching-Antworten
         if (data['matchingAnswers'] != null) {
           _matchingAnswers = Map<String, int>.from(data['matchingAnswers']);
@@ -254,7 +255,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
         maxHeight: 1080,
         imageQuality: 85,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _additionalImages[index] = File(pickedFile.path);
@@ -272,16 +273,16 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
 
   Future<List<String>> _uploadImages() async {
     List<String> urls = List.from(_uploadedImageUrls);
-    
+
     try {
       final user = _auth.currentUser;
       if (user == null) return urls;
-      
+
       for (int i = 0; i < _additionalImages.length; i++) {
         if (_additionalImages[i] != null) {
           final ref = _storage.ref().child('dating_images/${user.uid}_$i.jpg');
           final uploadTask = await ref.putFile(_additionalImages[i]!);
-          
+
           if (uploadTask.state == TaskState.success) {
             final url = await ref.getDownloadURL();
             if (i < urls.length) {
@@ -295,13 +296,13 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
     } catch (e) {
       print('Fehler beim Upload: $e');
     }
-    
+
     return urls;
   }
 
   Future<void> _saveDatingProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     // Prüfen ob mindestens 75% der Matching-Fragen beantwortet wurden
     if (_matchingAnswers.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -312,16 +313,16 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
       );
       return;
     }
-    
+
     setState(() => _isSaving = true);
-    
+
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      
+
       // Bilder hochladen
       final imageUrls = await _uploadImages();
-      
+
       // Dating-Profil Daten
       final datingData = {
         // Textfelder
@@ -331,7 +332,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
         'hobbies': _hobbiesController.text.trim(),
         'job': _jobController.text.trim(),
         'education': _educationController.text.trim(),
-        
+
         // Eigenschaften
         'relationshipGoal': _relationshipGoal,
         'hasKids': _hasKids,
@@ -343,16 +344,16 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
         'pets': _pets,
         'exercise': _exercise,
         'diet': _diet,
-        
+
         // Bilder
         'additionalImages': imageUrls,
-        
+
         // Matching
         'matchingAnswers': _matchingAnswers,
         'profileCompleted': true,
         'updatedAt': FieldValue.serverTimestamp(),
       };
-      
+
       // In Firestore speichern
       await _firestore
           .collection('users')
@@ -360,25 +361,21 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
           .collection('dating')
           .doc('profile')
           .set(datingData, SetOptions(merge: true));
-      
+
       // Basis-Profil aktualisieren
-      await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .update({
+      await _firestore.collection('users').doc(user.uid).update({
         'hasDatingProfile': true,
         'datingProfileCompleted': true,
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Dating-Profil erfolgreich gespeichert!'),
           backgroundColor: Colors.green,
         ),
       );
-      
+
       Navigator.pop(context);
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -465,7 +462,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Page Content
                 Expanded(
                   child: Form(
@@ -480,20 +477,20 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
                       children: [
                         // Seite 1: Basis-Informationen
                         _buildBasicInfoPage(),
-                        
+
                         // Seite 2: Lifestyle & Eigenschaften
                         _buildLifestylePage(),
-                        
+
                         // Seite 3: Bilder
                         _buildImagesPage(),
-                        
+
                         // Seite 4: Matching-Fragen
                         _buildMatchingQuestionsPage(),
                       ],
                     ),
                   ),
                 ),
-                
+
                 // Navigation Buttons
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -511,7 +508,6 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
                         )
                       else
                         const SizedBox(width: 120),
-                      
                       if (_currentPage < 3)
                         ElevatedButton.icon(
                           onPressed: _nextPage,
@@ -547,7 +543,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Über mich
           TextFormField(
             controller: _aboutMeController,
@@ -567,7 +563,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             },
           ),
           const SizedBox(height: 16),
-          
+
           // Was ich suche
           TextFormField(
             controller: _lookingForController,
@@ -581,7 +577,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             maxLength: 300,
           ),
           const SizedBox(height: 16),
-          
+
           // Was mir wichtig ist
           TextFormField(
             controller: _importantController,
@@ -595,7 +591,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             maxLength: 300,
           ),
           const SizedBox(height: 16),
-          
+
           // Hobbys
           TextFormField(
             controller: _hobbiesController,
@@ -607,7 +603,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             maxLength: 200,
           ),
           const SizedBox(height: 16),
-          
+
           // Beruf
           TextFormField(
             controller: _jobController,
@@ -618,7 +614,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Bildung
           TextFormField(
             controller: _educationController,
@@ -649,7 +645,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Beziehungsziel
           _buildDropdownField(
             label: 'Was suchst du?',
@@ -668,7 +664,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               });
             },
           ),
-          
+
           // Kinder
           Row(
             children: [
@@ -710,7 +706,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               ),
             ],
           ),
-          
+
           // Rauchen & Alkohol
           Row(
             children: [
@@ -753,7 +749,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               ),
             ],
           ),
-          
+
           // Sport & Ernährung
           Row(
             children: [
@@ -798,7 +794,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               ),
             ],
           ),
-          
+
           // Religion & Politik
           Row(
             children: [
@@ -846,7 +842,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               ),
             ],
           ),
-          
+
           // Haustiere
           _buildDropdownField(
             label: 'Haustiere',
@@ -895,7 +891,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Bilder Grid
           GridView.builder(
             shrinkWrap: true,
@@ -909,8 +905,9 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             itemCount: 5,
             itemBuilder: (context, index) {
               final hasImage = _additionalImages[index] != null ||
-                  (index < _uploadedImageUrls.length && _uploadedImageUrls[index].isNotEmpty);
-              
+                  (index < _uploadedImageUrls.length &&
+                      _uploadedImageUrls[index].isNotEmpty);
+
               return GestureDetector(
                 onTap: () => _pickAdditionalImage(index),
                 child: Container(
@@ -926,7 +923,8 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
                             image: FileImage(_additionalImages[index]!),
                             fit: BoxFit.cover,
                           )
-                        : (index < _uploadedImageUrls.length && _uploadedImageUrls[index].isNotEmpty)
+                        : (index < _uploadedImageUrls.length &&
+                                _uploadedImageUrls[index].isNotEmpty)
                             ? DecorationImage(
                                 image: NetworkImage(_uploadedImageUrls[index]),
                                 fit: BoxFit.cover,
@@ -988,9 +986,9 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               );
             },
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Tipps
           Card(
             color: AppColors.surfaceDark,
@@ -1079,12 +1077,12 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Fragen
           ..._matchingQuestions.map((question) {
             final questionId = question['id'];
             final selectedAnswer = _matchingAnswers[questionId];
-            
+
             return Card(
               color: AppColors.surfaceDark,
               margin: const EdgeInsets.only(bottom: 16),
@@ -1132,7 +1130,7 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
                       (index) {
                         final option = question['options'][index];
                         final isSelected = selectedAnswer == index;
-                        
+
                         return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -1193,9 +1191,9 @@ class _DatingProfileScreenState extends State<DatingProfileScreen> {
               ),
             );
           }),
-          
+
           const SizedBox(height: 24),
-          
+
           // Fortschritt
           Center(
             child: Column(

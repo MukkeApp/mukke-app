@@ -84,7 +84,7 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
     super.initState();
     _links = Map<String, String>.from(widget.socialLinks);
     _controllers = {};
-    
+
     _platforms.forEach((key, value) {
       _controllers[key] = TextEditingController(text: _links[key] ?? '');
     });
@@ -100,16 +100,16 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
 
   void _saveLinks() {
     Map<String, String> updatedLinks = {};
-    
+
     _controllers.forEach((key, controller) {
       if (controller.text.isNotEmpty) {
         updatedLinks[key] = controller.text.trim();
       }
     });
-    
+
     widget.onUpdate(updatedLinks);
     Navigator.pop(context);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Social Media Links gespeichert!'),
@@ -121,12 +121,12 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
   Future<void> _testLink(String platform) async {
     final controller = _controllers[platform];
     if (controller == null || controller.text.isEmpty) return;
-    
+
     String url = controller.text;
     if (!url.startsWith('http')) {
       url = _platforms[platform]!['prefix'] + url;
     }
-    
+
     try {
       if (await canLaunch(url)) {
         await launch(url);
@@ -194,11 +194,11 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             ..._platforms.entries.map((entry) {
               final platform = entry.key;
               final data = entry.value;
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Card(
@@ -270,9 +270,9 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
                 ),
               );
             }),
-            
+
             const SizedBox(height: 24),
-            
+
             // Speichern Button
             SizedBox(
               width: double.infinity,
@@ -294,9 +294,9 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Info Text
             const Center(
               child: Text(

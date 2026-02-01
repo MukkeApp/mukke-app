@@ -100,9 +100,12 @@ class LanguageProvider extends ChangeNotifier {
   // Getters
   Locale get currentLocale => _currentLocale;
   String get currentLanguageCode => _currentLocale.languageCode;
-  String get currentLanguageName => _supportedLanguages[_currentLocale.languageCode]?['name'] ?? 'Deutsch';
-  String get currentLanguageFlag => _supportedLanguages[_currentLocale.languageCode]?['flag'] ?? '🇩🇪';
-  Map<String, Map<String, String>> get supportedLanguages => _supportedLanguages;
+  String get currentLanguageName =>
+      _supportedLanguages[_currentLocale.languageCode]?['name'] ?? 'Deutsch';
+  String get currentLanguageFlag =>
+      _supportedLanguages[_currentLocale.languageCode]?['flag'] ?? '🇩🇪';
+  Map<String, Map<String, String>> get supportedLanguages =>
+      _supportedLanguages;
 
   // Sprache ändern
   void changeLanguage(String languageCode) {

@@ -13,7 +13,10 @@ class FirebaseService {
 
   // Beispiel-Methode: User-Daten speichern
   Future<void> saveUserData(String uid, Map<String, dynamic> data) async {
-    await firestore.collection('users').doc(uid).set(data, SetOptions(merge: true));
+    await firestore
+        .collection('users')
+        .doc(uid)
+        .set(data, SetOptions(merge: true));
   }
 
   // Beispiel-Methode: User-Daten laden

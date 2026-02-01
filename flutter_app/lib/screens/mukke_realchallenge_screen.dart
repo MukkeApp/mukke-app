@@ -6,29 +6,33 @@ class MukkeRealChallengeScreen extends StatefulWidget {
   const MukkeRealChallengeScreen({super.key});
 
   @override
-  State<MukkeRealChallengeScreen> createState() => _MukkeRealChallengeScreenState();
+  State<MukkeRealChallengeScreen> createState() =>
+      _MukkeRealChallengeScreenState();
 }
 
-class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen> 
+class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
     with TickerProviderStateMixin {
   // Animation Controllers
   late AnimationController _pulseController;
   late AnimationController _slideController;
   late Animation<double> _pulseAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   // Tab Controller
   late TabController _tabController;
-  
+
   // State Variables
   bool _isCreatingChallenge = false;
-  
+
   // Challenge Creation Controllers
-  final TextEditingController _challengeTitleController = TextEditingController();
-  final TextEditingController _challengeDescriptionController = TextEditingController();
-  final TextEditingController _challengeAmountController = TextEditingController();
+  final TextEditingController _challengeTitleController =
+      TextEditingController();
+  final TextEditingController _challengeDescriptionController =
+      TextEditingController();
+  final TextEditingController _challengeAmountController =
+      TextEditingController();
   int _challengeDurationMinutes = 5;
-  
+
   // Mock Data für offene Challenges
   final List<Map<String, dynamic>> _openChallenges = [
     {
@@ -70,13 +74,13 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
     _initializeAnimations();
     _tabController = TabController(length: 2, vsync: this);
   }
-  
+
   void _initializeAnimations() {
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.95,
       end: 1.05,
@@ -84,12 +88,12 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 1),
       end: Offset.zero,
@@ -98,7 +102,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       curve: Curves.easeOutCubic,
     ));
   }
-  
+
   @override
   void dispose() {
     _pulseController.dispose();
@@ -109,7 +113,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
     _challengeAmountController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +159,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   Widget _buildOpenChallengesTab() {
     return Column(
       children: [
@@ -172,7 +176,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ],
     );
   }
-  
+
   Widget _buildInfoBanner() {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -227,19 +231,19 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   Widget _buildChallengeCard(Map<String, dynamic> challenge) {
     final bool isLocked = challenge['locked'] ?? false;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: const Color(0xFF2D2D2D),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isLocked 
-            ? Colors.orange.withOpacity(0.5)
-            : const Color(0xFF00BFFF).withOpacity(0.3),
+          color: isLocked
+              ? Colors.orange.withOpacity(0.5)
+              : const Color(0xFF00BFFF).withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -381,7 +385,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   Widget _buildCreateChallengeTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -725,7 +729,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   Widget _buildStepCard(
     int step,
     String title,
@@ -783,7 +787,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   Widget _buildPaymentOption(
     String name,
     IconData icon,
@@ -808,17 +812,16 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        trailing: isSelected
-            ? Icon(Icons.check_circle, color: color)
-            : null,
+        trailing: isSelected ? Icon(Icons.check_circle, color: color) : null,
         onTap: () {
           // TODO: Payment method selection
         },
       ),
     );
   }
-  
-  Widget _buildFeeRow(String label, String amount, Color color, {bool isBold = false}) {
+
+  Widget _buildFeeRow(String label, String amount, Color color,
+      {bool isBold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -843,24 +846,24 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   String _calculateAmount() {
     final amount = double.tryParse(_challengeAmountController.text) ?? 0;
     return '${amount.toStringAsFixed(2)} €';
   }
-  
+
   String _calculateBossFee() {
     final amount = double.tryParse(_challengeAmountController.text) ?? 0;
     final fee = amount * 0.2;
     return '${fee.toStringAsFixed(2)} €';
   }
-  
+
   String _calculateWinnerAmount() {
     final amount = double.tryParse(_challengeAmountController.text) ?? 0;
     final winnerAmount = amount * 0.8;
     return '${winnerAmount.toStringAsFixed(2)} €';
   }
-  
+
   void _showChallengeDetails(Map<String, dynamic> challenge) {
     showModalBottomSheet(
       context: context,
@@ -869,7 +872,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       builder: (context) => _buildChallengeDetailsSheet(challenge),
     );
   }
-  
+
   Widget _buildChallengeDetailsSheet(Map<String, dynamic> challenge) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
@@ -1149,7 +1152,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   Widget _buildDetailCard(
     IconData icon,
     String label,
@@ -1189,16 +1192,16 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   void _acceptChallenge(Map<String, dynamic> challenge) {
     Navigator.pop(context);
     _showCountdownDialog(challenge);
   }
-  
+
   void _showCountdownDialog(Map<String, dynamic> challenge) {
     int countdown = 10;
     Timer? countdownTimer;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1206,19 +1209,19 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
         return StatefulBuilder(
           builder: (context, setState) {
             countdownTimer ??= Timer.periodic(
-                const Duration(seconds: 1),
-                (timer) {
-                  setState(() {
-                    countdown--;
-                  });
-                  if (countdown == 0) {
-                    timer.cancel();
-                    Navigator.pop(context);
-                    _startLiveChallenge(challenge);
-                  }
-                },
-              );
-            
+              const Duration(seconds: 1),
+              (timer) {
+                setState(() {
+                  countdown--;
+                });
+                if (countdown == 0) {
+                  timer.cancel();
+                  Navigator.pop(context);
+                  _startLiveChallenge(challenge);
+                }
+              },
+            );
+
             return AlertDialog(
               backgroundColor: const Color(0xFF2D2D2D),
               shape: RoundedRectangleBorder(
@@ -1287,7 +1290,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       countdownTimer?.cancel();
     });
   }
-  
+
   void _startLiveChallenge(Map<String, dynamic> challenge) {
     // TODO: Kamera öffnen und Live-Stream starten
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1306,16 +1309,16 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
         ),
       ),
     );
-    
+
     // Ping an alle Nutzer senden
     _sendNotificationToAllUsers(challenge);
   }
-  
+
   void _sendNotificationToAllUsers(Map<String, dynamic> challenge) {
     // TODO: Push-Notification an alle Nutzer
     debugPrint('Notification sent: ${challenge['title']} wurde gestartet!');
   }
-  
+
   void _createChallenge() {
     if (_challengeTitleController.text.isEmpty ||
         _challengeDescriptionController.text.isEmpty ||
@@ -1323,16 +1326,16 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       _showSnackBar('Bitte fülle alle Pflichtfelder aus');
       return;
     }
-    
+
     final amount = double.tryParse(_challengeAmountController.text) ?? 0;
     if (amount < 5) {
       _showSnackBar('Mindestbetrag ist 5€');
       return;
     }
-    
+
     _showPaymentConfirmationDialog();
   }
-  
+
   void _showPaymentConfirmationDialog() {
     showDialog(
       context: context,
@@ -1369,7 +1372,8 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
               ),
               child: Column(
                 children: [
-                  _buildConfirmationRow('Challenge:', _challengeTitleController.text),
+                  _buildConfirmationRow(
+                      'Challenge:', _challengeTitleController.text),
                   const SizedBox(height: 8),
                   _buildConfirmationRow('Betrag:', _calculateAmount()),
                   const SizedBox(height: 8),
@@ -1408,8 +1412,9 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
-  Widget _buildConfirmationRow(String label, String value, {bool isTotal = false}) {
+
+  Widget _buildConfirmationRow(String label, String value,
+      {bool isTotal = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1432,13 +1437,13 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ],
     );
   }
-  
+
   void _processPayment() {
     // TODO: PayPal Integration
     setState(() {
       _isCreatingChallenge = true;
     });
-    
+
     // Simulierte Zahlung
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
@@ -1447,7 +1452,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       _showSuccessDialog();
     });
   }
-  
+
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -1509,7 +1514,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       ),
     );
   }
-  
+
   void _resetForm() {
     _challengeTitleController.clear();
     _challengeDescriptionController.clear();
@@ -1518,7 +1523,7 @@ class _MukkeRealChallengeScreenState extends State<MukkeRealChallengeScreen>
       _challengeDurationMinutes = 5;
     });
   }
-  
+
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
