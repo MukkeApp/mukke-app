@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  jarviz:
+    build: .
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    volumes:
+      - ./flutter_app:/app/flutter_app
+      - ./ai_engine/memory:/app/ai_engine/memory
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=development
+    restart: unless-stopped
+    
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - jarviz

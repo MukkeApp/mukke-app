@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MukkeApp Module Status</title>
+    <style>
+        body { background: #1a1a1a; color: #fff; font-family: Arial, sans-serif; }
+        .module { padding: 10px; margin: 5px; border: 1px solid #00BFFF; border-radius: 5px; }
+        .active { background: rgba(0, 255, 0, 0.2); }
+    </style>
+</head>
+<body>
+    <h1>MukkeApp Module Status</h1>
+    <div id="modules"></div>
+    <script>
+        fetch('/api/modules')
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('modules');
+                for (const [name, status] of Object.entries(data)) {
+                    const div = document.createElement('div');
+                    div.className = 'module' + (status.active ? ' active' : '');
+                    div.textContent = name + ': ' + (status.active ? 'Aktiv' : 'Inaktiv');
+                    container.appendChild(div);
+                }
+            });
+    </script>
+</body>
+</html>

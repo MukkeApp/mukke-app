@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MukkeApp Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background: #1a1a1a; color: #fff; font-family: Arial, sans-serif; padding: 20px; }
+        #chart { max-width: 800px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <h1>MukkeApp Analytics Dashboard</h1>
+    <canvas id="chart"></canvas>
+    <script>
+        // Beispiel-Chart
+        const ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+                datasets: [{
+                    label: 'Aktive Nutzer',
+                    data: [12, 19, 3, 5, 2, 3, 15],
+                    borderColor: '#00BFFF',
+                    backgroundColor: 'rgba(0, 191, 255, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { ticks: { color: '#fff' }, grid: { color: '#333' } },
+                    x: { ticks: { color: '#fff' }, grid: { color: '#333' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

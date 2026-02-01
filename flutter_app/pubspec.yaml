@@ -1,0 +1,228 @@
+name: mukke_app
+description: MukkeApp - Die ultimative Entertainment App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI & Design
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.0
+  shimmer: ^3.0.0
+  lottie: ^3.3.1
+  photo_view: ^0.15.0
+  flutter_staggered_grid_view: ^0.7.0
+  carousel_slider: ^5.1.1
+  smooth_page_indicator: ^1.1.0
+  badges: ^3.1.2
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Firebase - Kompatible Versionen
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0  # Zurück auf ältere Version
+  firebase_storage: ^11.6.0
+  firebase_messaging: ^14.7.10
+  firebase_analytics: ^10.8.0
+  # Weitere Firebase Pakete erstmal auskommentiert
+  # firebase_crashlytics: ^3.4.9
+  # firebase_performance: ^0.9.3+9
+  # firebase_remote_config: ^4.3.8
+  # firebase_database: ^10.4.0
+  # firebase_dynamic_links: ^5.4.8
+  # firebase_in_app_messaging: ^0.7.4+8
+  
+  # Authentication
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^7.0.1
+  # flutter_facebook_auth: ^6.0.4  # Temporär auskommentiert wegen macOS Warnung
+  
+  # Networking
+  dio: ^5.4.0
+  http: ^1.1.2
+  retrofit: ^4.0.3
+  pretty_dio_logger: ^1.3.1
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  sqflite: ^2.3.0
+  path_provider: ^2.1.1
+  
+  # Media
+  image_picker: ^1.0.5
+  video_player: ^2.8.2
+  audioplayers: ^6.5.0
+  camera: ^0.11.1
+  flutter_sound: ^9.2.13
+  just_audio: ^0.10.4
+  audio_video_progress_bar: ^2.0.2
+  video_thumbnail: ^0.5.3
+  
+  # Speech & ML
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.0.2
+  google_ml_kit: ^0.20.0
+  
+  # Maps & Location
+  geolocator: ^14.0.1
+  geocoding: ^4.0.0
+  google_maps_flutter: ^2.5.3
+  location: ^8.0.1
+  
+  # Permissions
+  permission_handler: ^12.0.0+1
+  
+  # Utils
+  intl: ^0.20.2
+  url_launcher: ^6.2.2
+  share_plus: ^11.0.0
+  connectivity_plus: ^6.1.4
+  device_info_plus: ^11.5.0
+  package_info_plus: ^8.3.0
+  path: ^1.8.3
+  uuid: ^4.2.2
+  crypto: ^3.0.3
+  
+  # Animations
+  animations: ^2.0.10
+  flutter_animate: ^4.3.0
+  rive: ^0.13.20
+  animated_text_kit: ^4.2.2
+  
+  # Charts & Graphics
+  fl_chart: ^1.0.0
+  syncfusion_flutter_charts: ^29.2.11
+  
+  # UI Components
+  flutter_slidable: ^4.0.0
+  flutter_rating_bar: ^4.0.1
+  flutter_speed_dial: ^7.0.0
+  dropdown_search: ^6.0.2
+  flutter_colorpicker: ^1.0.3
+  
+  # Forms & Input
+  flutter_form_builder: ^10.0.1
+  flutter_typeahead: ^5.2.0
+  pin_code_fields: ^8.0.1
+  
+  # Date & Time
+  table_calendar: ^3.0.9
+  flutter_datetime_picker_plus: ^2.1.0
+  
+  # Notifications
+  # flutter_local_notifications: ^16.3.0  # Temporär auskommentiert
+  # awesome_notifications: ^0.8.2  # Temporär auskommentiert
+  
+  # QR Code & Barcode
+  mobile_scanner: ^7.0.1
+  qr_flutter: ^4.1.0
+  barcode_widget: ^2.0.4
+  
+  # Social Features
+  flutter_chat_ui: ^2.5.2
+  flutter_chat_types: ^3.6.2
+  stream_chat_flutter: ^9.12.0
+  
+  # Security
+  local_auth: ^2.1.7
+  flutter_secure_storage: ^10.0.0-beta.4
+  
+  # Analytics
+  mixpanel_flutter: ^2.1.1
+  amplitude_flutter: ^4.3.2
+  
+  # Performance
+  flutter_cache_manager: ^3.3.1
+  
+  # Utilities
+  flutter_dotenv: ^5.1.0
+
+  logger: ^2.0.2+1
+  flutter_native_splash: ^2.3.8
+  upgrader: ^11.4.0
+  
+  # WebView
+  webview_flutter: ^4.4.2
+  flutter_inappwebview: ^6.0.0
+  
+  # PDF
+  pdf: ^3.10.7
+  printing: ^5.12.0
+  
+  # Icons
+  font_awesome_flutter: ^10.6.0
+  line_icons: ^2.0.3
+  
+  # Miscellaneous
+  flutter_markdown: ^0.7.7+1
+  flutter_html: ^3.0.0-beta.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.7
+  hive_generator: ^2.0.1
+  retrofit_generator: ^9.2.0
+  json_serializable: ^6.7.1
+  mockito: ^5.4.4
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  
+  # Nur Ordner mit Inhalt referenzieren
+  assets:
+    - .env                 # <— angepasst (statt assets/.env)
+    - assets/images/       # Nur wenn Ordner vorhanden
+    - assets/fonts/        # Nur wenn Ordner vorhanden
+    # Leere Ordner auskommentiert:
+    # - assets/icons/
+    # - assets/animations/
+    # - assets/sounds/
+    # - assets/translations/
+    # - assets/lottie/
+    # - assets/rive/
+    
+  # Fonts nur wenn die Dateien wirklich existieren
+  # Wenn Sie keine Poppins/Roboto Fonts haben, kommentieren Sie diesen Bereich aus:
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf
+  #       - asset: assets/fonts/Poppins-Bold.ttf
+  #         weight: 700
+  #       - asset: assets/fonts/Poppins-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Poppins-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Poppins-Light.ttf
+  #         weight: 300
+  #       - asset: assets/fonts/Poppins-Thin.ttf
+  #         weight: 100
+  #       - asset: assets/fonts/Poppins-Italic.ttf
+  #         style: italic
+  #         
+  #   - family: Roboto
+  #     fonts:
+  #       - asset: assets/fonts/Roboto-Regular.ttf
+  #       - asset: assets/fonts/Roboto-Bold.ttf
+  #         weight: 700
+  #       - asset: assets/fonts/Roboto-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Roboto-Light.ttf
+  #         weight: 300

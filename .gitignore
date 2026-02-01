@@ -1,0 +1,41 @@
+# Secrets
+.env
+**/.env
+*.env
+
+# OS / IDE
+.vs/
+.idea/
+**/.idea/
+*.iml
+
+# Logs / temp / runtime data
+logs/
+temp/
+backups/
+uploads/
+*.log
+
+# Node / Python common
+node_modules/
+__pycache__/
+*.pyc
+
+# Flutter (monorepo wide)
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.metadata
+# Firebase secrets / configs (do not commit)
+config/firebase-service-account.json
+**/firebase-service-account.json
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Runtime / local memory (do not commit)
+ai_engine/memory/*.json
+
+# Backups
+**/*.bak_*
+**/*.bak
