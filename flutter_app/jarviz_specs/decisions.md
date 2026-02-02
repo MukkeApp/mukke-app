@@ -73,4 +73,20 @@ Begründung:
 Begründung:
 Fokus auf Stabilität und Kontrolle.
 
+## 2026-02-02 — Boss-only v1 via .env Allowlist (fail-closed)
+
+Entscheidung:
+- Boss-Erkennung erfolgt clientseitig v1 über Allowlist aus `.env`:
+    - `BOSS_EMAILS` (primär)
+    - `BOSS_UIDS` (optional)
+- Ohne gesetzte Keys gibt es **keinen Boss** (fail-closed).
+
+Begründung:
+- Kein Hardcoding im Repo.
+- Schnellster MVP für “Boss-only = nur Florian”.
+- Upgrade-fähig auf Custom Claims / Firestore Roles + Rules.
+
+Konsequenzen:
+- UI/Routes/Actions werden zentral über `RoleResolver`/`BossAccess` geschützt.
+- Firestore Rules/Server bleiben die “final security” (Follow-up).
 

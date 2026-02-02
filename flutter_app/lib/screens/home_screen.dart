@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     },
     {
       'label': 'Verbesserungsvorschläge',
-      'route': '/improvements',
+      'route': '/feedback', // passt zu main.dart: AppRoutes.feedback
       'icon': Icons.lightbulb,
       'gradient': [const Color(0xFF32CD32), const Color(0xFF00FA9A)],
     },

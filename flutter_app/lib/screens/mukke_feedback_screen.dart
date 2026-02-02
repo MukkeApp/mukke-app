@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mukke_app/security/boss_access.dart';
 import 'dart:math' as math;
 
 // Utils imports
@@ -130,7 +131,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
         'suggestionId': docRef.id,
         'title': 'Neuer Verbesserungsvorschlag',
         'message':
-            '${userData['name'] ?? 'Ein Nutzer'} hat einen neuen Vorschlag eingereicht: ${_titleController.text}',
+        '${userData['name'] ?? 'Ein Nutzer'} hat einen neuen Vorschlag eingereicht: ${_titleController.text}',
         'createdAt': FieldValue.serverTimestamp(),
         'read': false,
       });
@@ -168,10 +169,10 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDeveloper = _auth.currentUser?.email == 'mapstar1588@web.de';
+    final isBoss = BossAccess.isBoss(context);
 
     return DefaultTabController(
-      length: isDeveloper ? 3 : 2,
+      length: isBoss ? 3 : 2,
       child: Scaffold(
         backgroundColor: const Color(0xFF1A1A1A),
         appBar: AppBar(
@@ -196,7 +197,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                 icon: Icon(Icons.how_to_vote),
                 text: 'Abstimmungen',
               ),
-              if (isDeveloper)
+              if (isBoss)
                 const Tab(
                   icon: Icon(Icons.admin_panel_settings),
                   text: 'Admin',
@@ -224,7 +225,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
               children: [
                 _buildSuggestionForm(),
                 _buildVotingList(),
-                if (isDeveloper) _buildAdminPanel(),
+                if (isBoss) _buildAdminPanel(),
               ],
             ),
           ],
@@ -340,7 +341,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                           Icon(
                             category['icon'],
                             color:
-                                isSelected ? category['color'] : Colors.white70,
+                            isSelected ? category['color'] : Colors.white70,
                             size: 28,
                           ),
                           const SizedBox(height: 4),
@@ -470,7 +471,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                   const Expanded(
                     child: Text(
                       'Nach dem Einreichen startet eine 24-Stunden-Abstimmung. '
-                      'Bei über 60% Zustimmung wird dein Vorschlag umgesetzt!',
+                          'Bei über 60% Zustimmung wird dein Vorschlag umgesetzt!',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
@@ -512,28 +513,28 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                 ),
                 child: _isSubmitting
                     ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
                     : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.send, size: 20),
-                          const SizedBox(width: 12),
-                          const Text(
-                            'Vorschlag einreichen',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.send, size: 20),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Vorschlag einreichen',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
                       ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -594,8 +595,8 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                   const SizedBox(height: 16),
                   const Text(
                     'Die 24-Stunden-Abstimmung läuft jetzt.\n'
-                    'Du wirst per WhatsApp benachrichtigt,\n'
-                    'wenn dein Vorschlag umgesetzt wird.',
+                        'Du wirst per WhatsApp benachrichtigt,\n'
+                        'wenn dein Vorschlag umgesetzt wird.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white70,
@@ -687,7 +688,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
     final votes = data['votes'] as Map<String, dynamic>;
     final totalVotes = (votes['yes'] ?? 0) + (votes['no'] ?? 0);
     final yesPercentage =
-        totalVotes > 0 ? (votes['yes'] / totalVotes * 100) : 0.0;
+    totalVotes > 0 ? (votes['yes'] / totalVotes * 100) : 0.0;
     final hasVoted = (data['voters'] as List).contains(_auth.currentUser?.uid);
 
     // Berechne verbleibende Zeit
@@ -698,7 +699,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
 
     // Finde Kategorie für Farbe
     final categoryData = _categories.firstWhere(
-      (cat) => cat['name'] == data['category'],
+          (cat) => cat['name'] == data['category'],
       orElse: () => _categories[0],
     );
 
@@ -728,7 +729,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
               children: [
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: categoryData['color'].withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -756,7 +757,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                 // Zeit verbleibend
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: timeRemaining.isNegative
                         ? Colors.red.withOpacity(0.2)
@@ -1095,7 +1096,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
     final votes = data['votes'] as Map<String, dynamic>;
     final totalVotes = (votes['yes'] ?? 0) + (votes['no'] ?? 0);
     final yesPercentage =
-        totalVotes > 0 ? (votes['yes'] / totalVotes * 100) : 0.0;
+    totalVotes > 0 ? (votes['yes'] / totalVotes * 100) : 0.0;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1121,7 +1122,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
               if (data['adminDecision'] == 'approved')
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: const Color(0xFF32CD32).withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -1145,7 +1146,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
               else if (data['adminDecision'] == 'rejected')
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -1284,6 +1285,12 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
 
   // Admin Decision
   Future<void> _adminDecision(String suggestionId, String decision) async {
+    if (!BossAccess.isBoss(context)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kein Zugriff (Boss-only).')),
+      );
+      return;
+    }
     // Show confirmation dialog
     String? implementationNotes;
 
@@ -1328,7 +1335,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  decision == 'approved' ? const Color(0xFF32CD32) : Colors.red,
+              decision == 'approved' ? const Color(0xFF32CD32) : Colors.red,
             ),
             child: Text(decision == 'approved' ? 'Umsetzen' : 'Ablehnen'),
           ),
@@ -1356,7 +1363,7 @@ class _MukkeFeedbackScreenState extends State<MukkeFeedbackScreen>
                 : 'Vorschlag wurde abgelehnt',
           ),
           backgroundColor:
-              decision == 'approved' ? const Color(0xFF32CD32) : Colors.red,
+          decision == 'approved' ? const Color(0xFF32CD32) : Colors.red,
         ),
       );
     } catch (e) {

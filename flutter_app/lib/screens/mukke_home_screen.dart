@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:mukke_app/security/role_resolver.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -89,6 +92,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     },
   ];
 
+  List<Map<String, dynamic>> _visibleMenuItems(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return menuItems;
+
+    final resolver = context.read<RoleResolver>();
+    final isBoss = resolver.isBoss(email: user.email, uid: user.uid);
+    if (!isBoss) return menuItems;
+
+    // Verhindert Doppel-Einträge, falls später schon ein Boss-Item existiert
+    final alreadyHasBoss = menuItems.any((m) => m['route'] == '/boss');
+    if (alreadyHasBoss) return menuItems;
+
+    return [
+      ...menuItems,
+      {
+        'label': 'Boss Panel',
+        'route': '/boss',
+        'icon': Icons.admin_panel_settings,
+        'gradient': [const Color(0xFFFFD700), const Color(0xFFFF8C00)],
+      },
+    ];
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -125,6 +152,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         statusBarIconBrightness: Brightness.light,
       ),
     );
+
+    final items = _visibleMenuItems(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
@@ -256,15 +285,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                         childAspectRatio: 1.5,
                       ),
-                      itemCount: menuItems.length,
+                      itemCount: items.length,
                       itemBuilder: (context, index) {
-                        return _buildMenuItem(menuItems[index], index);
+                        return _buildMenuItem(items[index], index);
                       },
                     ),
                   ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'security/boss_allowlist.dart';
+import 'security/role_resolver.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mukke_app/screens/profile_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -112,6 +114,10 @@ class MukkeApp extends StatelessWidget {
         Provider<JarvizService>(create: (_) => JarvizService()),
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<PaymentService>(create: (_) => PaymentService()),
+        Provider<BossAllowlist>(create: (_) => BossAllowlist.fromEnv()),
+        Provider<RoleResolver>(
+          create: (ctx) => RoleResolver(ctx.read<BossAllowlist>()),
+        ),
       ],
       child: Consumer2<ThemeProvider, LanguageProvider>(
         builder: (context, themeProvider, languageProvider, child) {
