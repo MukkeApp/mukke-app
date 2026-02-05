@@ -39,3 +39,7 @@ ai_engine/memory/*.json
 # Backups
 **/*.bak_*
 **/*.bak
+
+# --- Local snapshots / backups (do not commit) ---
+flutter_app/_status_snapshots/
+mukkeapp_backup_*.bundle
